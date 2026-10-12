@@ -1,0 +1,163 @@
+# watch: — what the agent keeps watch on. Lives inside ~/.agent-kit/profile.yaml.
+# PROPOSED by the agent from the seed at the onboarding pause (Turn 4), picked/edited by the person,
+# revised by the weekly review. Edit freely, then `kit apply`.
+#
+# Superset of the onboarding template's watch block (adds kinds, sensitivity, feeds, world, mute/snooze).
+
+watch:
+  brief:
+    time: "07:00"               # local time; launchd runs a missed job at next wake
+    channel: browser-page       # browser-page | email-to-self (consent required) | console | terminal-file
+    weekly_review: friday       # day the "is this still the right watchlist?" block is appended; "off" to disable
+    baseline_done: false        # set by the first scheduled run (--baseline)
+
+  # ---------------------------------------------------------------------------------------------
+  # Monitors. 4–8 at onboarding; up to ~12 later. One entry per thing watched.
+  #   kind:        see the catalog below
+  #   what:        plain words, the person's own phrasing where possible
+  #   why:         the evidence that made the agent propose it (or "asked for it")
+  #   sources:     subset of [index, calendar, feeds, web, system]
+  #   threshold:   when it fires (plain words; the agent applies it)
+  #   cadence:     daily | weekdays | weekly
+  #   surface:     brief | top | card | push   (push only where the catalog allows it)
+  #   sensitivity: low | med | high          (defaults from kind; may be raised, never lowered below default)
+  #   inferred:    true until the person confirms
+  # ---------------------------------------------------------------------------------------------
+  monitors:
+    - kind: system-health       # ALWAYS present; cannot be removed
+      what: "The agent system itself: failed or missed jobs, stalled grind, expiring sign-ins, usage limits, low disk"
+      why: "always on"
+      sources: [system]
+      threshold: "anything not green; a job failed twice; a sign-in expires within 2 days"
+      cadence: daily
+      surface: top
+      sensitivity: low
+      inferred: false
+
+    # --- examples (delete or edit; only propose what the seed supports) ---
+    # - kind: people-quiet
+    #   what: "Priya (co-founder), Lee (lead investor), the Brightline account"
+    #   people: ["priya@example.com", "lee@fund.example", "@brightline.example"]
+    #   why: "Priya writes ~2x/week in the seed; one 9-day gap"
+    #   sources: [index]
+    #   threshold: "no message in 2x their usual gap (min 5 days)"
+    #   cadence: daily
+    #   surface: brief
+    #   sensitivity: med
+    #   inferred: true
+    #
+    # - kind: commitments-due
+    #   what: "Things I said I'd do, and asks waiting on my reply"
+    #   sources: [index]
+    #   threshold: "due within 2 days, or a VIP's ask unanswered > 2 business days"
+    #   cadence: daily
+    #   surface: top
+    #
+    # - kind: owed-to-me
+    #   what: "Promises others made me (quotes, documents, intros)"
+    #   sources: [index]
+    #   threshold: "2 days past the promised date, or 7 days with no date"
+    #
+    # - kind: calendar-prep
+    #   what: "Conflicts in the next 2 weeks; 3-line context for tomorrow's external meetings"
+    #   sources: [calendar, index]
+    #   threshold: "any overlap; any external meeting in the next 48h"
+    #   surface: top
+    #
+    # - kind: money-admin
+    #   what: "Workspace renewal, Q4 estimated tax, office lease option, unused subscriptions"
+    #   sources: [index, calendar]
+    #   threshold: "T-14, T-3, T-1 before each date in sa/deadlines.yaml; subscriptions unopened 60 days"
+    #   surface: brief            # top at T-3, push at T-1 if a push channel exists
+    #   sensitivity: high
+    #
+    # - kind: travel
+    #   what: "Trips in the next 30 days"
+    #   sources: [calendar, index]
+    #   threshold: "check-in windows, missing legs/hotel nights, ID expiry < 6 months after return"
+    #
+    # - kind: family-logistics      # offered only within risk.family_rule
+    #   what: "School calendar vs my calendar"
+    #   sources: [calendar]          # + index only if family_rule: in-scope
+    #   sensitivity: high
+    #
+    # - kind: field-news
+    #   what: "Fund administration and LP reporting"
+    #   sources: [feeds, web]
+    #   threshold: "material developments only; 3-6 lines max"
+    #   cadence: daily
+    #   sensitivity: low
+    #
+    # - kind: tracked-entities
+    #   what: "Competitors and companies I track"
+    #   entities: ["Acme Corp", "Northwind", "Contoso"]   # never a confidential counterparty in the clear
+    #   sources: [feeds, web]
+    #
+    # - kind: ai-tools
+    #   what: "Changes to the AI tools I use (my assistant, my connectors, the kit)"
+    #   sources: [feeds, web, system]
+    #   cadence: weekly
+    #
+    # - kind: mentions              # opt-in
+    #   what: "My name and my company in the press / online"
+    #   sources: [feeds, web]
+    #   cadence: weekly
+    #
+    # - kind: health-appointments   # opt-in; logistics only, never clinical content
+    #   what: "Upcoming appointments and unanswered confirmations"
+    #   sources: [calendar, index]
+    #   sensitivity: high
+
+  added_by_grind: []            # monitors proposed later from the full history (same shape, inferred: true)
+
+  mute: []                      # [{ match: "Northwind hiring news", since: "2026-10-20" }]  — never surfaced again
+  snooze: []                    # [{ match: "lease option", until: "2026-11-15" }]
+
+  # ---------------------------------------------------------------------------------------------
+  # Feeds the person can plug in WITHOUT API keys. The agent proposes these from the seed.
+  # ---------------------------------------------------------------------------------------------
+  feeds:
+    newsletters: []             # senders or a Gmail label already in the index: ["news@newsletter.example", "label:Newsletters"]
+    google_alerts: []           # [{ query: "\"Brightline\" OR \"Dana Ruiz\"", delivery: email | rss, rss_url: "" }]
+    rss: []                     # ["https://newsletter.example/feed", "https://github.com/org/repo/releases.atom",
+                                #  "https://hnrss.org/newest?q=fund+administration", "https://news.google.com/rss/search?q=Acme+Corp"]
+    ics: []                     # public calendars: school, team, conference, holidays
+    x_likes:
+      mode: none                # none | archive (one-time bootstrap from the X data export) | api (optional; costs money)
+      archive_path: ""
+    web_search: true            # built-in search on the subscription (Claude Code WebSearch / Codex web_search)
+
+  # ---------------------------------------------------------------------------------------------
+  # Agent SA: the post-cutoff glossary that keeps the agents current.
+  # ---------------------------------------------------------------------------------------------
+  world:
+    enabled: true
+    domains: []                 # 1-3 fields + "AI tools for <their work>", e.g. ["fund administration", "regional commercial real estate", "AI tools for finance teams"]
+    model_cutoff: ""            # from the runtime's stated training cutoff, e.g. "2026-06"; the catch-up sweep starts here
+    catch_up_done: false        # the one-time bootstrap during the first grind night
+    doc: "~/.agent-kit/context/SITUATIONAL_AWARENESS.md"
+    injection:
+      claude_code: hook         # hook | off
+      codex: hook               # hook | static (re-render into ~/.codex/AGENTS.md kit block each run) | off
+      max_full_entries: 12
+      max_tail_names: 200
+      token_budget: 1500
+
+# ---------------------------------------------------------------------------------------------
+# Catalog (the agent's reference; not edited by the person)
+#
+# kind                 default                     sensitivity  default cadence   push allowed
+# people-quiet         on if >=3 VIPs in seed      med          daily             no
+# commitments-due      on                          med          daily             no
+# owed-to-me           on                          med          daily             no
+# calendar-prep        on                          med          daily             no
+# money-admin          on if seed shows any        high         daily (T-14/3/1)  T-1 only
+# family-logistics     off unless accepted         high         daily             no
+# field-news           on (1-3 domains)            low          daily + weekly    no
+# tracked-entities     on if seed shows any        low          daily             no
+# ai-tools             on (light)                  low          weekly            no
+# mentions             off (opt-in)                med          weekly            no
+# health-appointments  off (opt-in)                high         daily             no
+# travel               on if trip <=30 days        med          daily             T-1 only
+# system-health        always                      low          every run         failures/expiry
+# ---------------------------------------------------------------------------------------------

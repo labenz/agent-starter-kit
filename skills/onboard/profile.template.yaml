@@ -1,0 +1,247 @@
+# profile.yaml — the person's profile, machine-readable. Mostly INFERRED from their data, then CORRECTED by them.
+# Lives at ~/.agent-kit/profile.yaml (real mode) or <rehearsal out dir>/profile.yaml.
+# Written turn by turn during /onboard; edit freely afterwards, then run `kit apply`
+# to regenerate AGENTS.md, permissions, and config from it.
+# Secrets never go in this file. Seed/grind DATA never goes in this file (it lives in seed/, data/, wiki/).
+#
+# Enum values are listed in comments. Values marked (not yet supported) may be RECORDED
+# so we know what people use, but the kit must not promise or configure them.
+
+schema_version: 3
+
+progress:
+  mode: real              # real | rehearsal | persona
+  phase: orient           # orient | gate | discover | seed | pause | generated | placed | grind | buildout | done
+  pause_turn: 0           # last COMPLETED pause turn (0–5); the resume checkpoint inside Phase 3
+  gate_done: false
+  pause_done: false       # all five pause turns + contradiction check
+  dives_done: []          # subset of [voice, routines]
+  started_at: ""          # ISO timestamp
+  updated_at: ""
+
+environment:              # filled by Phase A read-only checks (or by persona.environment in persona mode)
+  runtime: ""             # claude-code | codex
+  runtime_version: ""
+  os: ""                  # e.g. macOS 26.1
+  arch: ""                # arm64 | x86_64  (x86_64 = unsupported in v1; say so)
+  machine_kind: ""        # laptop | desktop  (decides keep-awake guidance for the grind)
+  free_disk_gb: 0
+  has: { git: false, bun: false, gh: false, brew: false, node: false, python3: false, ollama: false }
+  kit_root: "~/agent-starter-kit"     # the cloned kit repo (read-only to the person; `kit update` fast-forwards it)
+  deep_context_root: "~/deep-context-toolkit"   # pinned separate clone of the public repo
+  kit_home: "~/.agent-kit"            # ALL personal state: this profile, generated files, seed, grind, data, wiki, .env, custom skills, _trash
+  existing_config:        # what Phase A found; decides merge behavior when placing files
+    claude_md: false      # ~/.claude/CLAUDE.md exists
+    claude_settings: false  # ~/.claude/settings.json exists
+    codex_agents_md: false  # ~/.codex/AGENTS.md exists
+    codex_config: false     # ~/.codex/config.toml exists
+
+# ======================= PHASE 0: THE PRIVACY GATE (asked BEFORE anything is read) =======================
+privacy_gate:
+  answered_at: ""         # ISO timestamp. Nothing leaves the Mac (enrichment, cloud embeddings, web searches with names) until set.
+  text_may_go: "local-only"   # local-only | gemini | gemini-with-exclusions   (Tap 3)
+  stated_defaults_accepted: true   # the agent STATED draft-only email, never-spend, family logistics-only; person may change at the pause
+
+confidential:             # Tap 1. Matters only some people know about. Empty list = none.
+  matters: []
+  # - name: "Project Atlas"             # codename; the ONLY name used in anything others could see
+  #   what: ""                          # optional; the person need not say
+  #   read_in: ["Dana", "Marcus Lee (counsel)"]
+  #   not_read_in: ["Rosa (EA)"]
+  #   privileged_domains: ["counsel.example"]      # attorney-client / banker material
+  #   keywords: ["Atlas", "LOI"]                   # never into web searches, invites, shared drafts, or third-party APIs
+  #   seen_in_seed: false               # set by Phase 2 if keywords/domains matched; the brief says only "material exists"
+
+risk:                     # Tap 2 + stated defaults (changeable at the pause, Turn 3)
+  never_touch: []         # ["bank and brokerage accounts", "payroll", "medical"]
+  never_touch_domains: [] # ["chase.com", "schwab.com", "gusto.com"] -> WebFetch denies + browser no-go list
+  exclude_people: []      # names/handles excluded from the index and context entirely
+  exclude_chats: []
+  email_identity: "draft-only"       # draft-only | send-with-cc   (draft-only => send tools are DENIED in permissions)
+  spending: "never"                  # never | per-item-approval | standing-cap   (standing-cap needs an employee agent with its own card)
+  spending_cap_usd: 0
+  family_rule: "logistics-only"      # logistics-only (events may be scheduled around; message content out of search) | excluded | in-scope
+  privacy_line: ""                   # free text for AGENTS.md, reconciled by the contradiction check
+  contradictions_resolved: []        # e.g. "family: logistics-only; Sofia's events OK on calendar, no message search"
+
+consent:                  # derived from privacy_gate.text_may_go; the conservative choice is the default
+  gemini_enrichment: false           # message text -> Google Gemini API for scoring/topics (paid key)
+  embeddings: "ollama"               # none | ollama (local; the default when local-only and Ollama can be installed) | gemini
+  voyage_rerank: false               # search queries + candidate snippets -> Voyage
+  notes: ""                          # e.g. "nothing about Atlas leaves the laptop"
+
+# ======================= PHASE 1: SOURCES (discovered silently, then "yes to these?") =======================
+sources:
+  discovered: []          # everything found, with evidence. Nothing here was opened or logged into.
+  # - { kind: gmail, account: "dana@example.com", account_type: personal-gmail, found_by: "Mail.app accounts; Chrome profile", primary: true }
+  # - { kind: google-workspace, account: "dana@brightline.example", account_type: workspace-company-managed, found_by: "Mail.app accounts", primary: false }
+  # - { kind: calendar, account: "dana@brightline.example", found_by: "Calendar.app" }
+  # - { kind: slack, installed: true, running: false, workspaces_hint: [] }
+  # - { kind: whatsapp, installed: true }     # read via Beeper later
+  # - { kind: imessage, installed: true }     # Messages is always present; read via Beeper
+  # - { kind: fireflies, found_by: "bookmark" }   # only Fireflies transcripts are supported today
+  # - { kind: connectors, gmail: authorized, calendar: authorized, drive: present-unauthorized }   # Claude Code only
+  approved: []            # what the person said yes to, and WHEN each is read
+  # - { kind: gmail, account: "dana@brightline.example", stage: seed }     # stage: seed | grind | later | never
+  # - { kind: calendar, account: "dana@brightline.example", stage: seed }
+  # - { kind: whatsapp, via: beeper, stage: grind, needs: "Beeper login + QR" }
+  # - { kind: slack, workspaces: ["brightline"], stage: later, needs: "workspace app approval" }
+
+# ======================= PHASE 2: SEED (last ~30 days, fast) =======================
+seed:
+  method: ""              # connectors | takeout-since | oauth-since | simulated   (rehearsal: connectors-readonly | simulated)
+  window_days: 30
+  takeout_requested_at: ""   # Google Takeout (Mail + Calendar) request time; the zip is also the grind's input
+  takeout_zip: ""            # path once it arrives, e.g. ~/.agent-kit/data/takeout/takeout-20261012.zip
+  threads_indexed: 0
+  events_indexed: 0
+  cutoff_hit: false          # true if the seed stopped at the ~1,500-thread cap
+  brief_path: ""             # briefs/orientation.md (+ .html)
+  completed_at: ""
+  simulated: false           # rehearsal/persona: true when the seed is fake data; every artifact is labeled SIMULATED
+
+# ======================= PHASE 3: PAUSE (inferred from the seed; corrected by the person) =======================
+inferred:                 # which blocks are still the agent's inference vs confirmed by the person at the pause
+  person: true
+  vips: true
+  priorities: true
+  chores: true
+  might_be_wrong: []      # the brief's "I might be wrong about" items, each with resolved: true/false
+
+person:
+  name: ""
+  slug: ""                # lowercase handle for file names and bus identity, e.g. "dana"
+  address_as: ""          # how the agent should address them
+  timezone: ""            # IANA; from the machine, confirmed
+  roles: []               # inferred from signatures, domains, calendar; corrected at Turn 1
+  organizations: []       # inferred
+  live_projects: []       # 2–4 strings; inferred from live threads; corrected
+  people:
+    work: []              # [{ name: "", relationship: "", note: "", evidence: "" }]   evidence = why the seed thinks so
+    home: []              # names here may still be EXCLUDED from search (see risk); calendar logistics governed by family_rule
+  vips:                   # the people/domains whose threads must never be dropped (drives triage)
+    people: []            # [{ name: "", email_or_domain: "", why: "", inferred: true }]
+    domains: []           # ["bank.example", "counsel.example"]
+    threads_live_in: []   # email | text | whatsapp | slack | signal | phone-calls | other
+
+goals:
+  priorities_now: []      # Turn 2: the three live threads / slipping items that matter most, in their words
+  chores_to_hand_off: []  # Turn 4: up to three, near-verbatim, chosen from chores VISIBLE in the seed
+  working_in_30_days: ""  # Turn 4: a moment, not a metric, near-verbatim
+  tried_before: ""        # optional; what made them quit last time
+
+watch:                    # Turn 4: what the agent keeps watch on. PROPOSED from the seed, picked/edited by the person.
+                          # Drives the daily situational-awareness brief (skills/situational-awareness), the first day-2 automation.
+                          # Canonical schema (a superset of this block, with defaults per kind): skills/situational-awareness/watchlist.template.yaml
+  brief: { time: "07:00", channel: "browser-page" }   # mirrors day2.morning_brief; the SA brief IS the morning brief
+  monitors: []
+  # - kind: people-quiet          # people-quiet | commitments-due | owed-to-me | calendar-prep | money-admin | family-logistics
+  #                               # | field-news | tracked-entities | ai-tools | travel | health-appointments (opt-in) | mentions (opt-in) | system-health (always)
+  #   what: "Priya (co-founder) goes quiet"
+  #   why: "writes ~2x/week in the seed; 9-day gap once"           # the evidence that made the agent propose it
+  #   sources: [index]            # subset of [index, calendar, web, system, feeds]
+  #   sensitivity: med            # low (public) | med (private-comms metadata/content) | high (money, family, health, legal: logistics only, never quoted off-Mac); auto-set by kind
+  #   cadence: daily              # daily | weekdays | weekly
+  #   surface: brief              # brief | top (the "needs you today" block) | card (once the console exists) | push (only with a push channel)
+  #   threshold: "no message in 7 days"
+  # - kind: field-news
+  #   what: "Fund administration + LP reporting"
+  #   why: "subject of 14 threads; two newsletters subscribed"
+  #   sources: [web]
+  #   cadence: daily
+  #   surface: brief
+  # - kind: system-health         # ALWAYS present
+  #   what: "the agent system itself: failed jobs, stalled grind, expiring logins, a brief that didn't run"
+  #   sources: [system]
+  #   cadence: daily
+  #   surface: brief
+  added_by_grind: []      # monitors proposed later from what the full history revealed (Phase 5), same shape
+  feeds:                  # no-key feeds the brief and the glossary read (see the SA design, §4); proposed from newsletters the seed shows they actually open
+    newsletters: []       # sender addresses or a Gmail label already in the index
+    rss: []               # Substack /feed, vendor changelogs, GitHub releases.atom, Google Alerts → RSS, Google News search RSS
+    ics: []               # public school / team / conference calendars by URL
+  world:                  # the agent-SA layer: keeps the agent current on named things in the person's fields that postdate its training
+    domains: []           # 1–3 named fields, seeded from the field-news monitor (e.g. ["fund administration", "AI tools for finance"])
+    inject_at_session_start: true   # compressed glossary head injected each session (both runtimes)
+    glossary_budget_tokens: 1500
+  mute: []                # monitor ids the person said "stop telling me about"; the weekly review may propose dropping them
+  snooze: []              # [{ id: "", until: "" }]
+
+delegates:                # humans who work with the owner (an EA, a chief of staff, a partner); usually visible in the seed
+  - { name: "", role: "", may_see_agent_output: false, may_instruct: false, inferred: true }
+  # may_instruct stays false unless the owner says otherwise explicitly; even then, only via an authenticated channel
+
+setup:                    # path facts (Turn 4; google account type usually inferred in discovery)
+  terminal_comfort: 3     # 1–5
+  subscriptions: []       # ["claude-max", "chatgpt-pro"]
+  preferred_runtime: ""   # claude-code | codex
+  google:
+    account_type: ""      # personal-gmail | workspace-self-admin | workspace-company-managed | none
+    admin: ""             # who administers the Workspace, if company-managed
+  github_account: ""      # needed only while the kit repo is private
+  computer_use_during_setup: true    # agent may drive the browser; OS prompts and consents stay with the person
+
+# ======================= PHASE 4: GRIND (full history; days; resumable) =======================
+grind:
+  status: "not-started"   # not-started | planned | running | paused | rate-limited | done | failed
+  runner: ""              # launchd | nohup | remote (an always-on Mac they own)
+  input: ""               # takeout-zip | oauth-extractor
+  estimate:
+    messages: 0
+    years: 0
+    wall_clock_days: ""   # a range, e.g. "3–6"
+    disk_gb: 0
+  stages:                 # G1–G7; state.json is the live cursor, this is the summary
+    import: pending       # pending | running | done | skipped
+    enrich: pending       # skipped when consent.gemini_enrichment is false
+    embed: pending        # skipped when consent.embeddings is none
+    wiki_months: pending
+    wiki_years: pending
+    wiki_articles: pending
+    second_pass: pending  # briefs/world.md
+  keep_awake: ""          # what the person agreed to: "lid open on power; prevent-sleep on" | "runs on my Mini" | ""
+  started_at: ""
+  finished_at: ""
+
+# ======================= OPTIONAL SHORT DIVES =======================
+voice:
+  preferences: ""         # short/thorough, formal/casual, pet peeves
+  sample_captured: false  # text lives in ~/.agent-kit/voice/sample.md, not here
+  learn_from_sent: false  # build voice/profile.md from their own sent mail during the grind
+
+day2:
+  morning_brief: { time: "07:00", channel: "browser-page" }   # the daily situational-awareness brief; browser-page | email-to-self | console | terminal-file
+  comms_scan: { cadence: "weekdays 08:00,16:00", channel: "browser-page" }
+  doctor: { cadence: "daily 06:30" }
+  email_to_self_consent: false       # required before channel email-to-self is used
+
+hardware:                 # mostly inferred (environment.machine_kind); asked only when the grind needs it
+  always_on_mac: "no"     # yes | no | maybe   (a desktop/Mini that could run the grind and, later, an employee agent)
+  always_on_description: ""
+  private_network_ok: "maybe"        # yes | no | maybe  (Tailscale; needed only for phone access)
+
+employee:                 # only if module "employee" is ever proposed and accepted
+  agent_name: ""
+  runner: ""              # claude-code | codex
+  machine: ""
+
+# ======================= PHASE 5: BUILD OUT (proposed from evidence, one at a time) =======================
+modules:
+  status:                 # pending | installed | skipped | failed   — AGENTS.md "What's installed" is rendered from THIS
+    foundation: pending   # instructions + permissions + kit CLI (placed at the end of the pause)
+    deep-context: pending # seed index exists -> "seeded"; full grind done -> "installed"
+    skills: pending
+    console: pending
+    employee: pending
+  deep_context_state: "none"   # none | seeded | grinding | installed
+  wiki_state: "none"           # none | months | years | articles
+  proposals: []           # every proposal made, with its evidence and answer; `/onboard propose` re-offers "later" items
+  # - { module: skills, evidence: "11 VIP threads unanswered >2 days in the seed", answer: yes, at: "" }   # answer: yes | later | no
+  # - { module: console, evidence: "9 travel days in the next 30", answer: later, at: "" }
+  google_path: ""         # takeout | connectors | oauth-desktop | oauth-internal | none   (see INSTALL §3)
+  deep_context_sources: []  # subset of [gmail, calendar, slack, slack-dm, beeper, fireflies, twitter]; mirrors sources.approved as they land
+  installed_extras:       # facts kit apply uses to keep AGENTS.md truthful
+    tailscale: false
+    telegram: false
+    password_broker: false
+    web_push: false

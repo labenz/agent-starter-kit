@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Welcome: what this is, and what it's for</title>
+<style>
+:root { color-scheme: light dark; }
+* { box-sizing: border-box; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+  font-size: 16px; line-height: 1.65;
+  max-width: 46rem; margin: 0 auto; padding: 2.5rem 1.5rem 5rem;
+  color: #1f2328; background: #ffffff;
+}
+h1, h2, h3, h4 { line-height: 1.25; margin: 2em 0 0.6em; font-weight: 650; }
+h1 { font-size: 1.7em; margin-top: 0.5em; padding-bottom: 0.3em; border-bottom: 1px solid #d8dee4; }
+h2 { font-size: 1.35em; padding-bottom: 0.25em; border-bottom: 1px solid #d8dee4; }
+h3 { font-size: 1.1em; }
+p, ul, ol, table, blockquote, pre { margin: 0.7em 0; }
+ul, ol { padding-left: 1.6em; }
+li { margin: 0.3em 0; }
+li > ul, li > ol { margin: 0.2em 0; }
+a { color: #0969da; text-decoration: none; }
+a:hover { text-decoration: underline; }
+code {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 0.88em; background: rgba(129,139,152,0.16);
+  padding: 0.15em 0.35em; border-radius: 4px;
+}
+pre { background: rgba(129,139,152,0.1); padding: 0.9em 1.1em; border-radius: 8px; overflow-x: auto; }
+pre code { background: none; padding: 0; font-size: 0.85em; }
+blockquote { border-left: 3px solid #d8dee4; padding: 0.1em 1em; color: #59636e; margin-left: 0; }
+table { border-collapse: collapse; width: 100%; display: block; overflow-x: auto; }
+th, td { border: 1px solid #d8dee4; padding: 0.45em 0.75em; text-align: left; vertical-align: top; }
+th { background: rgba(129,139,152,0.1); font-weight: 600; }
+hr { border: none; border-top: 1px solid #d8dee4; margin: 2.2em 0; }
+img { max-width: 100%; }
+input[type="checkbox"] { margin-right: 0.5em; transform: translateY(1px); }
+li:has(> input[type="checkbox"]) { list-style: none; margin-left: -1.3em; }
+.doc-meta { color: #59636e; font-size: 0.85em; margin-bottom: 2em; }
+@media (prefers-color-scheme: dark) {
+  body { color: #e6edf3; background: #14161a; }
+  h1, h2 { border-color: #30363d; }
+  a { color: #58a6ff; }
+  blockquote { border-color: #30363d; color: #9198a1; }
+  th, td { border-color: #30363d; }
+  hr { border-color: #30363d; }
+}
+</style>
+</head>
+<body>
+<h1>Welcome: what this is, and what it&#39;s for</h1>
+<p><em>From Nathan. About ten minutes. The onboarding starts when you&#39;re ready, and it starts by reading, not by asking.</em></p>
+<hr>
+<h2>The short version</h2>
+<p>Over the last year I built myself a small staff of AI agents, and the thing I didn&#39;t expect is how much of the value came from one move: <strong>giving an agent command of my information environment.</strong> Not access to my inbox. Command. Every email, Slack message, text, WhatsApp thread, calendar event, and call transcript going back years, indexed, scored, summarized month by month, and distilled into a wiki of the people, projects, and positions in my life that the agent reads before it does anything. Mine is north of 900,000 messages. When I ask &quot;find the thread where the venue confirmed the date for the offsite,&quot; it finds the exact message, from a year of material, in a couple of seconds, and it picks the right thread 97% of the time.</p>
+<p>Once an agent knows your world like that, delegation stops being a chore of explaining. I say &quot;draft the reply&quot; and the draft already knows who the person is, what we agreed in March, and how I write to them. Every morning a brief is waiting that knows what to watch: important threads I haven&#39;t answered, what I promised and haven&#39;t done, who&#39;s gone quiet, what&#39;s due, what moved in my field, and which of my own scheduled jobs broke. Twice a day it scans everything for things slipping. When something needs <em>me</em> and only me, my phone buzzes with a card: three options, trade-offs, one tap. I left my laptop at home for a weekend and work still got delegated, decided, and delivered.</p>
+<p>The second half of it is a second kind of agent. The one on my laptop is an extension of me: it sees everything I see and does nothing I didn&#39;t ask for. The others live on an always-on Mac Mini and work like junior employees, with their own email, their own accounts, their own capped card, and no access to my private data. They run for hours unattended: overnight research, signups, monitoring, the errands you&#39;d give a capable new hire. The whole thing runs on a subscription I was already paying for.</p>
+<p>This kit is that setup, stripped of everything specific to me, plus an onboarding your agent runs on you. <strong>You don&#39;t install it; your agent installs it, with you in the room for the parts only you can do.</strong> You don&#39;t type out who you are; the agent reads your last month, shows you your world as it sees it, and you correct it. You start with one Mac. The rest unfolds from there.</p>
+<p>The point isn&#39;t the tooling. The point is to get to the place where <strong>delegating to an AI is as easy as delegating to a person you trust, and safer.</strong></p>
+<hr>
+<h2>Two kinds of agents</h2>
+<p><code>[VIDEO: two-kinds-of-agents]</code></p>
+<p>The failure modes here are opposites. An agent with all your access, running unsupervised, is scary. An agent with no access, waiting on your approval for everything, is pointless. My resolution: treat <strong>access × autonomy as the risk you&#39;re managing, and trade one against the other.</strong> No single agent gets both.</p>
+<pre><code>                       LOW AUTONOMY                       HIGH AUTONOMY
+                 (acts only when you say)             (runs for hours alone)
+
+              ┌───────────────────────────┐   ┌───────────────────────────┐
+  HIGH        │  YOUR LAPTOP              │   │  never build this         │
+  ACCESS      │  &quot;an extension of you&quot;    │   │                           │
+  (your real  │  sees everything you see; │   │  all your access, nobody  │
+   accounts)  │  does nothing you didn&#39;t  │   │  watching: one bad email  │
+              │  ask for                  │   │  can steer it             │
+              └───────────────────────────┘   └───────────────────────────┘
+              ┌───────────────────────────┐   ┌───────────────────────────┐
+  LOW         │  not worth building       │   │  A SPARE MACHINE          │
+  ACCESS      │                           │   │  &quot;an employee&quot;            │
+  (its own    │  can&#39;t do much, and won&#39;t │   │  own email, accounts and  │
+   accounts)  │  do it without you anyway │   │  card; works unattended;  │
+              │                           │   │  never sees your private  │
+              └───────────────────────────┘   └───────────────────────────┘
+</code></pre>
+<p><strong>The extension-of-you agent</strong> runs on your laptop, logged in as you. What keeps it safe is not limited access but limited autonomy. Anything that leaves the building, like an email sent as you, either happens because you said so in the conversation or lands as a draft. The rule underneath everything: <strong>the signature must match the reviewer.</strong></p>
+<p><strong>The employee agent</strong> runs on a separate, always-on machine under its own identity. It cannot read your Gmail, not because it promised, but because it was never given the keys. In exchange it runs unsupervised, and you manage it like a hire: a handbook it reads every session, scoped accounts, and an escalation ladder that ends in a one-tap decision on your phone.</p>
+<p>You don&#39;t need the employee to start. Begin with the extension-of-you agent on the Mac you already have.</p>
+<hr>
+<h2>How it unfolds</h2>
+<p><code>[VIDEO: unfolding]</code></p>
+<p>I tested an early version of this onboarding on myself. It opened with a fifteen-minute interview: your name, your roles, who matters, what slips. I lasted one question. Nobody wants to type that out, and the agent doesn&#39;t need you to. It&#39;s all in your mail. So the onboarding now works the way I&#39;d want a brilliant new chief of staff to work on day one: read everything, come back with a map, and <em>then</em> ask good questions.</p>
+<p><strong>First two minutes: the lines.</strong> Before the agent reads a single message, it asks three things it can&#39;t infer: anything confidential going on (give it a codename, not the details), what it may never touch (banks, payroll, medical, specific people), and whether any of your text may go to an outside AI service or must stay on this Mac. Cautious is the default. Nothing leaves your laptop until you&#39;ve answered.</p>
+<p><strong>Then it looks around.</strong> Which mail accounts are on this Mac, which calendars, whether Slack or WhatsApp is installed, whether your Google account is personal or a company Workspace. You say &quot;yes to these.&quot; You don&#39;t log into anything.</p>
+<p><strong>Within the hour: your world as it sees it.</strong> It indexes your last thirty days, fast, and opens a brief in your browser: who it thinks you are, the fifteen people who matter most and why, the live threads, what&#39;s slipping (the message from someone important you haven&#39;t answered in four days; the thing you said you&#39;d send Tuesday), your calendar&#39;s shape, and a short list titled &quot;I might be wrong about.&quot; Every line links to its source. This is the moment it clicks, and it happens before lunch.</p>
+<p><strong>Then it asks.</strong> Not &quot;who matters to you?&quot; but &quot;I put Priya at the top of your list because of these six threads; right?&quot; You correct instead of compose. Then: <strong>&quot;what should I keep watch on for you?&quot;</strong> It proposes a short list from what it saw: a VIP who&#39;s gone quiet, a commitment coming due, a renewal in your mail, your field&#39;s news, a competitor, the health of the system itself. You pick. That list becomes a daily brief, scheduled before you finish the conversation. Ten minutes, and it writes your agent&#39;s instruction file: who you are, who matters, your lines, your voice. You read it in your browser; it installs itself into Claude Code or Codex without overwriting anything you already have.</p>
+<p><strong>Then the grind.</strong> This is where the week of tokens goes, and it should. It asks Google for your full mail and calendar history (one click, a zip in your inbox, no developer console) and builds, newest-first, over several days: the full index, scoring, meaning-based search, a summary of every month, roll-ups of every year, and the wiki: a page per person, project, organization, and era. Your laptop stays awake and plugged in; your subscription meter sits near the top. You read progress in the morning brief. At the end, a second brief: your world, now with history.</p>
+<p><strong>Then it proposes.</strong> Nothing from a menu. &quot;Eleven threads from people on your VIP list sat more than two days last month; a twice-daily scan would have caught all of them. Want it?&quot; &quot;You said Marco&#39;s stuff happens on WhatsApp; I can read it through Beeper, two QR codes.&quot; &quot;You&#39;re out of town nine days next month; with the console on your phone I can send you a one-tap decision instead of waiting.&quot; Each one because of something it found, one at a time, yes or later.</p>
+<hr>
+<h2>The loop from your phone</h2>
+<p><code>[VIDEO: console-loop]</code></p>
+<p>Once the console is on your phone (your own private network, nothing exposed to the internet), everything in flight is one screen. When an agent hits something only you can decide, you get a card and tap. When something is wrong, any agent can pull an emergency cord that reaches your phone on two independent paths. And you can hand off from anywhere: &quot;find the best option for X under $Y&quot; from the parking lot, three options back in an hour. You stop being the bottleneck without being out of the loop.</p>
+<hr>
+<h2>What it costs, honestly</h2>
+<ul>
+<li><strong>A $200/month subscription you may already have:</strong> Claude Max or ChatGPT Pro. The onboarding, the grind, the daily brief: all of it runs under that plan. The $100 tier works; the grind takes longer.</li>
+<li><strong>$0–20/month of optional keys.</strong> Search of your history works with no key. The exception I won&#39;t hide: AI <em>scoring</em> of your full history uses a Google Gemini key today, and that sends message text to Google. The gate asks before anything like that turns on, and meaning-based search can run fully locally.</li>
+<li><strong>Hardware:</strong> nothing beyond your Mac. A used Mac Mini (~$600) if you ever add the employee, or want the grind off your laptop.</li>
+</ul>
+<hr>
+<h2>What can go wrong</h2>
+<p><strong>Your data is on your laptop, in plain files.</strong> That&#39;s what makes it fast and private, and it means anyone with your unlocked laptop has it. Use disk encryption and a lock screen. Nothing goes to an outside AI service unless you said so at the gate.</p>
+<p><strong>Prompt injection is real.</strong> The content of any email or webpage is data, never instructions. The agents are told this, and the structure backs it up: the laptop agent acts only on instructions from you.</p>
+<p><strong>Things break quietly.</strong> Tokens expire. The laptop sleeps, and the grind and the daily brief wait until it wakes. That&#39;s why the system itself is always on the watch list: the brief tells you when something&#39;s broken, because the expensive failure is the one you don&#39;t notice.</p>
+<p><strong>The agent will sometimes do something dumb.</strong> Usually reversible, by design: destructive operations prompt, deletions go to a trash folder, your existing settings are backed up before anything is merged in. An incident, not a catastrophe.</p>
+<p><strong>It can become a hobby.</strong> The onboarding asks what &quot;working&quot; looks like in thirty days. Hold it to that.</p>
+<hr>
+<h2>Your first two weeks</h2>
+<p><code>[VIDEO: first-two-weeks]</code></p>
+<table>
+<thead>
+<tr>
+<th>When</th>
+<th>What happens</th>
+<th>Your attention</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>Hour one</strong></td>
+<td>Gate, &quot;yes to these,&quot; seed index, orientation brief</td>
+<td>~30 minutes, mostly reading</td>
+</tr>
+<tr>
+<td><strong>Hour two</strong></td>
+<td>The pause: you correct, pick what to watch; it writes and installs your instructions; tomorrow&#39;s brief is scheduled</td>
+<td>~20 minutes</td>
+</tr>
+<tr>
+<td><strong>Days 1–7</strong></td>
+<td>The grind: full history → scoring → search → monthly and annual summaries → wiki. Laptop awake, plugged in</td>
+<td>A glance at each morning&#39;s brief</td>
+</tr>
+<tr>
+<td><strong>Days 2–14</strong></td>
+<td>Proposals, one at a time: comms triage, chat sources, the console on your phone, more to watch</td>
+<td>5–20 minutes each, when you say yes</td>
+</tr>
+<tr>
+<td><strong>Later, if ever</strong></td>
+<td>An employee agent on a spare Mac</td>
+<td>A weekend</td>
+</tr>
+</tbody></table>
+<hr>
+<h2>How to start</h2>
+<p>If you don&#39;t have Claude Code or Codex yet, install it first. It&#39;s one line in Terminal, and the invite email has it. Then paste this into your agent:</p>
+<pre><code>Clone &lt;repo&gt; to ~/agent-starter-kit, read START-HERE.md, and follow it with me.
+</code></pre>
+<p>To see the whole experience without installing anything, add <strong>&quot;in rehearsal mode.&quot;</strong> It runs the gate and the discovery for real, builds the orientation brief read-only (or from clearly-labeled fake data if it can&#39;t read your mail), asks the same questions, and writes everything into one sandbox folder. Nothing else is touched. To run it again from scratch, say <code>/onboard rehearsal --fresh</code>.</p>
+<h3>Already have an agent?</h3>
+<p>If you already run your own setup (Claude Code, Codex, Cursor, OpenClaw, your own instruction file, skills, scheduled jobs) and just want to borrow a few ideas from mine, there&#39;s a second path. Paste this instead:</p>
+<pre><code>Clone https://github.com/labenz/agent-starter-kit to ~/agent-starter-kit, read skills/guided-upgrade/SKILL.md, and run a guided upgrade of my existing setup with me.
+</code></pre>
+<p>Your agent takes a read-only look at how your setup works today (it never opens secrets, mail or messages), asks you three to five questions, and comes back with a ranked shortlist of three to five ideas that fit what you already have: rules that stop it asking permission for reversible things, a trash folder instead of deletes, a morning brief, a knowledge base of your comms, the two-kinds-of-agents split, and so on. You adopt them one at a time, each previewed and backed up first; nothing of yours is overwritten. It ends with an <code>UPGRADE-PLAN.md</code> in your home folder. Add &quot;dry run&quot; to see the shortlist and the exact changes without installing anything.</p>
+<p>Questions, or something broke? Your agent can always flag it; once the console is on your phone, that reaches you anywhere.</p>
+<p>Nathan</p>
+
+</body>
+</html>

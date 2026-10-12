@@ -1,0 +1,22 @@
+# BEGIN agent-starter-kit (managed by `kit apply`; a backup of the original ~/.codex/config.toml is in ~/.agent-kit/_trash/)
+# Codex equivalents of the kit's Claude Code permissions. Values checked against codex-cli 0.159.3 (`codex --help`):
+#   sandbox_mode    = read-only | workspace-write | danger-full-access
+#   approval_policy = on-request | never
+# Merge rule: if the person's config.toml already sets a top-level key below, `kit apply` keeps THEIR value
+# unless it is less safe than the kit's (danger-full-access, or approval_policy = "never" for interactive use),
+# in which case it asks once and records the answer in profile.yaml.
+# Note: top-level keys must appear before any [table] in TOML; `kit apply` inserts this block at the top.
+
+sandbox_mode = "workspace-write"
+approval_policy = "on-request"
+
+[sandbox_workspace_write]
+network_access = true            # kit tools call Gmail/Slack/Gemini APIs; the sandbox still limits WRITES
+writable_roots = ["~/.agent-kit"]
+
+# Scheduled runs don't read this for approvals; the launchd wrapper passes them explicitly:
+#   codex exec -m <kit.config.json runtime.scheduled_model_codex, default gpt-6-astra> -s workspace-write -c approval_policy="never" \
+#     -c sandbox_workspace_write.network_access=true -C ~/.agent-kit "<routine prompt>"
+# `codex exec` is non-interactive, so "never" means a blocked command fails back to the model instead of waiting.
+# The kit never uses --dangerously-bypass-approvals-and-sandbox.
+# END agent-starter-kit

@@ -1,0 +1,129 @@
+{
+  "schema_version": 3,
+  "generated_by": "kit apply",
+  "generated_at": "{{progress.updated_at}}",
+
+  "owner": {
+    "name": "{{person.name}}",
+    "slug": "{{person.slug}}",
+    "timezone": "{{person.timezone}}"
+  },
+
+  "paths": {
+    "kit_root": "{{environment.kit_root}}",
+    "deep_context_root": "{{environment.deep_context_root}}",
+    "kit_home": "{{environment.kit_home}}",
+    "env_file": "{{environment.kit_home}}/.env",
+    "trash": "{{environment.kit_home}}/_trash",
+    "deep_context_db": "{{environment.kit_home}}/data/deep-context/deep_context.db",
+    "wiki": "{{environment.kit_home}}/wiki",
+    "briefs": "{{environment.kit_home}}/briefs"
+  },
+
+  "runtime": {
+    "preferred": "{{setup.preferred_runtime}}",
+    "subscriptions": {{json setup.subscriptions}},
+    "scheduled_model": "claude-opus-5-5",
+    "scheduled_model_codex": "gpt-6-astra",
+    "_scheduled_model_note": "Pinned so a default change doesn't silently move scheduled jobs. `kit update` may bump these pins; it says so in its changelog.",
+    "codex": {
+      "sandbox_mode": "workspace-write",
+      "approval_policy": "on-request",
+      "scheduled_approval_policy": "never",
+      "rules_file": "~/.codex/rules/agent-starter-kit.rules"
+    }
+  },
+
+  "agents": [
+    {
+      "id": "{{person.slug}}-agent",
+      "kind": "extension-of-self",
+      "machine": "this-mac",
+      "access": "high",
+      "autonomy": "low",
+      "acts_on": ["owner"]
+    }{{#if (installed "employee")}},
+    {
+      "id": "{{employee.agent_name}}",
+      "kind": "employee",
+      "runner": "{{employee.runner}}",
+      "machine": "{{employee.machine}}",
+      "access": "low",
+      "autonomy": "high",
+      "identity": { "email": "", "github": "", "card": false },
+      "sees_private_data": false
+    }{{/if}}
+  ],
+
+  "delegates": {{json delegates}},
+
+  "topology": "{{#if (installed "employee")}}two-machine{{else}}single-machine{{/if}}",
+
+  "modules": {
+    "status": {{json modules.status}},
+    "deep_context_state": "{{modules.deep_context_state}}",
+    "wiki_state": "{{modules.wiki_state}}",
+    "google_path": "{{modules.google_path}}",
+    "installed_extras": {{json modules.installed_extras}},
+    "proposals": {{json modules.proposals}}
+  },
+
+  "privacy_gate": {
+    "answered_at": "{{privacy_gate.answered_at}}",
+    "text_may_go": "{{privacy_gate.text_may_go}}"
+  },
+
+  "seed": {
+    "method": "{{seed.method}}",
+    "window_days": {{seed.window_days}},
+    "takeout_zip": "{{seed.takeout_zip}}",
+    "brief": "{{environment.kit_home}}/briefs/orientation.md",
+    "simulated": {{#if seed.simulated}}true{{else}}false{{/if}}
+  },
+
+  "grind": {
+    "_note": "`kit grind start|status|pause|resume` reads/writes ~/.agent-kit/grind/state.json (the live cursor). This block is the plan. Stages run newest-first through `claude -p` / `codex exec` on the subscription; rate limits back off and resume; the Mac sleeping pauses it.",
+    "status": "{{grind.status}}",
+    "runner": "{{grind.runner}}",
+    "input": "{{grind.input}}",
+    "estimate": {{json grind.estimate}},
+    "stages": {{json grind.stages}},
+    "keep_awake": "{{grind.keep_awake}}",
+    "state_file": "{{environment.kit_home}}/grind/state.json",
+    "logs": "{{environment.kit_home}}/logs/grind/"
+  },
+
+  "console": {
+    "enabled": {{#if (installed "console")}}true{{else}}false{{/if}},
+    "bind": "127.0.0.1",
+    "port": 8787,
+    "phone_url": "",
+    "private_network": "{{#if modules.installed_extras.tailscale}}tailscale{{else}}none{{/if}}"
+  },
+
+  "distress": {
+    "_note": "Channels actually installed, in the order `kit distress` tries them. Never list a channel that isn't installed.",
+    "channels": [{{#if modules.installed_extras.web_push}}"web-push", {{/if}}{{#if modules.installed_extras.telegram}}"telegram", {{/if}}"mac-notification", "next-brief"]
+  },
+
+  "browser": {
+    "no_go_domains": {{json risk.never_touch_domains}}
+  },
+
+  "email_identity": "{{risk.email_identity}}",
+  "spending": { "mode": "{{risk.spending}}" },
+  "consent": {{json consent}},
+
+  "watch": {
+    "_note": "Monitors the person chose at the pause (proposed from the seed). The daily situational-awareness brief (skills/situational-awareness) reads this list; `kit apply` keeps it in sync with profile.yaml -> watch.",
+    "brief": {{json watch.brief}},
+    "monitors": {{json watch.monitors}},
+    "added_by_grind": {{json watch.added_by_grind}}
+  },
+
+  "day2": {
+    "morning_brief": {{json day2.morning_brief}},
+    "comms_scan": {{json day2.comms_scan}},
+    "doctor": {{json day2.doctor}}
+  }
+}

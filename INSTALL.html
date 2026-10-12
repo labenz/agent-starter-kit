@@ -1,0 +1,1490 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Agent Starter Kit: install requirements and setup journey</title>
+<style>
+:root { color-scheme: light dark; }
+* { box-sizing: border-box; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+  font-size: 16px; line-height: 1.65;
+  max-width: 46rem; margin: 0 auto; padding: 2.5rem 1.5rem 5rem;
+  color: #1f2328; background: #ffffff;
+}
+h1, h2, h3, h4 { line-height: 1.25; margin: 2em 0 0.6em; font-weight: 650; }
+h1 { font-size: 1.7em; margin-top: 0.5em; padding-bottom: 0.3em; border-bottom: 1px solid #d8dee4; }
+h2 { font-size: 1.35em; padding-bottom: 0.25em; border-bottom: 1px solid #d8dee4; }
+h3 { font-size: 1.1em; }
+p, ul, ol, table, blockquote, pre { margin: 0.7em 0; }
+ul, ol { padding-left: 1.6em; }
+li { margin: 0.3em 0; }
+li > ul, li > ol { margin: 0.2em 0; }
+a { color: #0969da; text-decoration: none; }
+a:hover { text-decoration: underline; }
+code {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 0.88em; background: rgba(129,139,152,0.16);
+  padding: 0.15em 0.35em; border-radius: 4px;
+}
+pre { background: rgba(129,139,152,0.1); padding: 0.9em 1.1em; border-radius: 8px; overflow-x: auto; }
+pre code { background: none; padding: 0; font-size: 0.85em; }
+blockquote { border-left: 3px solid #d8dee4; padding: 0.1em 1em; color: #59636e; margin-left: 0; }
+table { border-collapse: collapse; width: 100%; display: block; overflow-x: auto; }
+th, td { border: 1px solid #d8dee4; padding: 0.45em 0.75em; text-align: left; vertical-align: top; }
+th { background: rgba(129,139,152,0.1); font-weight: 600; }
+hr { border: none; border-top: 1px solid #d8dee4; margin: 2.2em 0; }
+img { max-width: 100%; }
+input[type="checkbox"] { margin-right: 0.5em; transform: translateY(1px); }
+li:has(> input[type="checkbox"]) { list-style: none; margin-left: -1.3em; }
+.doc-meta { color: #59636e; font-size: 0.85em; margin-bottom: 2em; }
+@media (prefers-color-scheme: dark) {
+  body { color: #e6edf3; background: #14161a; }
+  h1, h2 { border-color: #30363d; }
+  a { color: #58a6ff; }
+  blockquote { border-color: #30363d; color: #9198a1; }
+  th, td { border-color: #30363d; }
+  hr { border-color: #30363d; }
+}
+</style>
+</head>
+<body>
+<h1>Agent Starter Kit: install requirements and setup journey</h1>
+<p><strong>Status:</strong> draft v3, 2026-10-12. v1 was derived from the actual code and a reference two-Mac setup (read-only inspection). v2 applied the fixes from a synthetic-persona QA run. v3 restructures the journey around the &quot;unfolding&quot; arc (SKILL.md): privacy gate → source discovery → 30-day seed → pause → multi-day grind → build-out proposed from evidence. ⚠️ marks claims not verified on a machine.</p>
+<h2>The short version</h2>
+<p>You install your agent (Claude Code or Codex) if you don&#39;t have it, then paste <strong>one prompt</strong>. Your agent does the rest, with you in the room for the parts only you can do. Those parts are batched: <strong>one sitting of Mac approvals per install session</strong> (~10 minutes) and a handful of sign-in clicks.</p>
+<table>
+<thead>
+<tr>
+<th>When</th>
+<th>What you get</th>
+<th>Your attention</th>
+<th>Wall-clock</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>Day 1, hour one</strong></td>
+<td>The two-minute privacy gate; a silent inventory of your sources (&quot;yes to these?&quot;); a <strong>seed index of your last 30 days</strong> and an <strong>orientation brief</strong> of your world in your browser. Google Takeout requested for your full history (no Google Cloud console)</td>
+<td><strong>~30 min</strong>, mostly reading the brief</td>
+<td>under an hour</td>
+</tr>
+<tr>
+<td><strong>Day 1, hour two</strong></td>
+<td>The pause (you correct what it inferred, pick what it should watch); your instruction file, safe permissions, the <code>kit</code> CLI, placed into Claude Code / Codex; the <strong>daily situational-awareness brief</strong> scheduled for tomorrow</td>
+<td><strong>~20 min</strong> + one approvals sitting (~5 min)</td>
+<td>an hour</td>
+</tr>
+<tr>
+<td><strong>Days 1–7, the grind</strong></td>
+<td>Your <strong>full history</strong> imported, (optionally) scored, embedded for meaning-based search, summarized by month and year, and distilled into a <strong>wiki</strong> (people / organizations / projects / timeline). Runs on your subscription, newest-first, resumable</td>
+<td>a glance at each morning&#39;s brief; keep the laptop awake and plugged in</td>
+<td><strong>3–7 days</strong> of background work (§2b)</td>
+</tr>
+<tr>
+<td><strong>Days 2–14, build-out</strong></td>
+<td>Modules proposed one at a time from what it found: comms triage (skills pack), chat sources (Slack / Beeper), the phone Console over Tailscale, more monitors</td>
+<td><strong>5–20 min</strong> per accepted module</td>
+<td>as you say yes</td>
+</tr>
+<tr>
+<td><em>Later, optional</em></td>
+<td>An employee agent on a spare Mac</td>
+<td>a weekend</td>
+<td>plus a spare Mac</td>
+</tr>
+</tbody></table>
+<p><strong>Cost, one figure everywhere:</strong> the <strong>$200/month subscription</strong> you probably already have (Claude Max, or ChatGPT Pro; the $100 Max tier works for lighter use, but scheduled jobs share its limits), plus <strong>$0–20/month of optional keys</strong>. The core runs entirely on the subscription through <code>claude -p</code> / <code>codex exec</code>. Optional keys are only for extras you choose (§1, &quot;Keys at a glance&quot;).</p>
+<hr>
+<h2>Layout: repos, paths, and the one prompt</h2>
+<table>
+<thead>
+<tr>
+<th>Thing</th>
+<th>Where</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong><code>agent-starter-kit</code></strong> (private repo during the pilot)</td>
+<td><code>~/agent-starter-kit</code></td>
+<td>The onboard skill, foundation templates, skills pack, kit edition of the Agent Console, and the <code>kit</code> CLI. Ships <code>.claude/skills/onboard</code> and <code>.agents/skills/onboard</code> (relative symlinks to <code>skills/onboard</code>), so <code>/onboard</code> is discoverable in Claude Code <strong>and</strong> Codex. Read-only to you: <code>kit update</code> fast-forwards it.</td>
+</tr>
+<tr>
+<td><strong><code>deep-context-toolkit</code></strong> (public, <code>github.com/labenz/deep-context-toolkit</code>)</td>
+<td><code>~/deep-context-toolkit</code></td>
+<td>A separate clone, <strong>pinned</strong> to the tag in <code>~/agent-starter-kit/deps.json</code>. Code only. Cloned on day 1 for the seed; filled by the grind. Must include <code>tools/import-takeout.ts</code> (the Takeout importer, new in October 2026).</td>
+</tr>
+<tr>
+<td><strong>Your state</strong></td>
+<td><code>~/.agent-kit/</code></td>
+<td>Everything personal: <code>profile.yaml</code>, the generated <code>AGENTS.md</code> + <code>AGENTS.local.md</code> (your own additions), <code>kit.config.json</code>, <code>generated/</code>, <code>seed/</code>, <code>grind/</code> (state + plan), <code>data/deep-context/</code> (via <code>DEEP_CONTEXT_DB</code> / <code>DEEP_CONTEXT_VECTOR_DB</code>), <code>data/takeout/</code> (the zip), <code>wiki/</code>, <code>briefs/</code>, <code>voice/</code>, custom <code>skills/</code>, <code>.env</code> (mode 600), <code>_trash/</code>, <code>logs/</code>. A local git repo, so every change is reversible. Because none of this lives in either repo, <strong><code>kit update</code> is always a fast-forward pull.</strong></td>
+</tr>
+<tr>
+<td>Runtime config</td>
+<td><code>~/.claude/CLAUDE.md</code>, <code>~/.claude/settings.json</code>, <code>~/.codex/AGENTS.md</code>, <code>~/.codex/config.toml</code>, <code>~/.codex/rules/agent-starter-kit.rules</code></td>
+<td>The kit <strong>never overwrites</strong> these. It backs them up and merges a clearly delimited kit-managed block (§7).</td>
+</tr>
+</tbody></table>
+<p><strong>Before the one prompt</strong> (skip what you already have):</p>
+<ul>
+<li>Claude Code: open Terminal, paste <code>curl -fsSL https://claude.ai/install.sh | bash</code>, type <code>claude</code>, and click <strong>Authorize</strong> in the browser. No admin password needed.</li>
+<li>Codex: install the Codex app (<code>codex app</code> opens the installer ⚠️ path for first-time users unverified), or <code>brew install --cask codex</code> if you have Homebrew. Then sign in with ChatGPT.</li>
+<li>A <strong>GitHub account</strong> that has accepted the kit repo invite. This is only needed while the repo is private; the invite email says so.</li>
+</ul>
+<p><strong>The one prompt</strong> (paste into Claude Code or Codex):</p>
+<pre><code>Clone https://github.com/&lt;org&gt;/agent-starter-kit to ~/agent-starter-kit, read START-HERE.md, and follow it with me.
+</code></pre>
+<p>The agent clones (using <code>gh auth login --web</code> first if the repo is private), reads <code>START-HERE.md</code>, and runs <code>/onboard</code>. Next time: <code>cd ~/agent-starter-kit</code>, then <code>claude</code> or <code>codex</code>, then <code>/onboard resume</code>. Or just <code>kit status</code> / <code>kit grind status</code> from anywhere.</p>
+<hr>
+<h2>0. Baseline machine</h2>
+<table>
+<thead>
+<tr>
+<th>Item</th>
+<th>Requirement</th>
+<th>Evidence / note</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Hardware</td>
+<td><strong>Apple silicon Mac</strong> (M1 or later)</td>
+<td>The reference setup is arm64. <code>voice-print.ts</code> ships only a <code>sherpa-onnx-darwin-arm64</code> native binary. ⚠️ Intel Macs untested; onboarding says so if it detects <code>x86_64</code>.</td>
+</tr>
+<tr>
+<td>macOS</td>
+<td><strong>macOS 26 (Tahoe) tested</strong>; 14+ probably fine</td>
+<td>⚠️ macOS 14/15 untested.</td>
+</tr>
+<tr>
+<td>Disk</td>
+<td><strong>≥10 GB free</strong> (typical setup uses 2–5 GB), plus room for the Takeout zip (roughly the size of your mailbox)</td>
+<td>Roughly 5 GB per ~1M messages; 1–2 years of mail typically lands around 1–2 GB.</td>
+</tr>
+<tr>
+<td>RAM</td>
+<td>16 GB recommended</td>
+<td>Parallel agent sessions are the real load.</td>
+</tr>
+<tr>
+<td>User account</td>
+<td>An admin account, for <strong>one</strong> password entry when Homebrew is first needed (semantic search&#39;s SQLite, Ollama)</td>
+<td>The gate, seed, and pause need no admin password ⚠️ (except possibly the Xcode Command Line Tools dialog). Keyword-only grind needs none either.</td>
+</tr>
+<tr>
+<td>One Mac</td>
+<td><strong>Default.</strong> Everything runs on your laptop, including the grind.</td>
+<td>If you own an always-on desktop or Mini, the grind can run there instead (it needs only the Takeout zip and the toolkit). A second &quot;employee&quot; machine is optional and later.</td>
+</tr>
+<tr>
+<td>Windows/Linux</td>
+<td>Not supported in v1</td>
+<td>launchd, AppleScript, macOS Contacts, and the Beeper/iMessage paths are macOS-only.</td>
+</tr>
+</tbody></table>
+<hr>
+<h2>1. Requirements by module</h2>
+<p>Modules in the order they now land: <strong>0 Foundation</strong> (end of the pause), <strong>1 Deep Context</strong> (seed on day 1, grind over days 1–7), then <strong>2 Skills, 3 Console, 4 Employee (optional)</strong>, each proposed from what the seed and grind revealed. Legend: <strong>R</strong> = required for that module, <strong>O</strong> = optional (and what you lose without it).</p>
+<h3>Module 0: Foundation (day 1, placed at the end of the pause)</h3>
+<table>
+<thead>
+<tr>
+<th>Software / account</th>
+<th>R/O</th>
+<th>Version seen</th>
+<th>Why</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>Claude Code CLI</strong> <em>or</em> <strong>Codex CLI</strong></td>
+<td>R (one)</td>
+<td>claude 2.1.295; codex-cli 0.159.3</td>
+<td>Runs the onboarding and everything after. Claude Code&#39;s native installer goes to <code>~/.local/bin/claude</code>.</td>
+</tr>
+<tr>
+<td><strong>Claude Max</strong> <em>or</em> <strong>ChatGPT Pro</strong></td>
+<td>R (one)</td>
+<td>n/a</td>
+<td>The subscription spine ($200/mo; see the short version). Headless <code>claude -p</code> / <code>codex exec</code> under launchd run on this login. ⚠️ ChatGPT Plus also runs Codex, but its limits are too low for scheduled jobs plus interactive use.</td>
+</tr>
+<tr>
+<td>Xcode Command Line Tools</td>
+<td>R</td>
+<td>Apple Git 2.39–2.50</td>
+<td>Provides git. <code>xcode-select --install</code> pops a macOS dialog: you click <strong>Install</strong> (~5–10 min download).</td>
+</tr>
+<tr>
+<td><strong>Bun</strong> ≥ 1.3</td>
+<td>R</td>
+<td>1.3.6 / 1.3.11</td>
+<td>Every kit tool is Bun/TypeScript. <code>curl -fsSL https://bun.sh/install | bash</code>; no sudo.</td>
+</tr>
+<tr>
+<td>gh (GitHub CLI)</td>
+<td>R while the kit repo is private</td>
+<td>2.85 / 2.88</td>
+<td>Day 1 installs the release binary into <code>~/.local/bin</code> (no Homebrew, no sudo). <code>gh auth login --web</code> shows an 8-character code that you type into a browser page.</td>
+</tr>
+<tr>
+<td><code>kit</code> CLI</td>
+<td>R</td>
+<td>ships in the kit</td>
+<td>A shim at <code>~/.local/bin/kit</code> → <code>bun ~/agent-starter-kit/tools/kit.ts</code> (§6).</td>
+</tr>
+<tr>
+<td>Google Chrome + <strong>Claude in Chrome</strong></td>
+<td>O</td>
+<td>Chrome 152</td>
+<td>The agent&#39;s hands for web steps (§4): opening Takeout with the right boxes ticked, and the optional Google Cloud console path. Without it, you click through a numbered checklist yourself.</td>
+</tr>
+</tbody></table>
+<h3>Module 1: Deep Context (seed on day 1; grind over days 1–7; <code>labenz/deep-context-toolkit</code>)</h3>
+<p>See the table under &quot;Module 2: Deep Context&quot; below (kept under its old heading so cross-references hold). Day-1 additions:</p>
+<table>
+<thead>
+<tr>
+<th>Software / account</th>
+<th>R/O</th>
+<th>Why</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>Google Takeout</strong> (Mail + Calendar, .zip)</td>
+<td>R unless you choose OAuth</td>
+<td>The no-Google-Cloud-console path to your <strong>full history</strong>: you tick two boxes and click Export; Google emails a zip (minutes for small mailboxes, hours for large ones). <code>bun ~/deep-context-toolkit/tools/import-takeout.ts &lt;zip&gt; --since 30d</code> seeds the last 30 days; the same zip with no <code>--since</code> is the grind&#39;s input. §3 Path 5.</td>
+</tr>
+<tr>
+<td><strong>claude.ai connectors: Gmail + Google Calendar</strong> (Claude Code only)</td>
+<td>O, recommended</td>
+<td>The <strong>fastest seed</strong> while Takeout churns: the agent reads your last 30 days read-only through Anthropic&#39;s verified app (one consent in claude.ai → Settings → Connectors, no 7-day expiry). Also live mail for drafts and the daily brief. Verified 2026-10-12: connector servers load in a headless <code>claude -p</code> run (§9).</td>
+</tr>
+<tr>
+<td><code>tools/import-takeout.ts</code> in the pinned toolkit</td>
+<td>R for the Takeout path</td>
+<td>New in October 2026; <code>deps.json</code> must pin a tag that has it. Its <code>--help</code> is the contract. ⚠️ Not yet verified on a real multi-GB export.</td>
+</tr>
+</tbody></table>
+<h3>Module 2: Skills pack (proposed from evidence; usually days 2–7)</h3>
+<table>
+<thead>
+<tr>
+<th>Software / account</th>
+<th>R/O</th>
+<th>Why</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Module 0</td>
+<td>R</td>
+<td>Skills are <code>SKILL.md</code> + tools, linked into <code>~/.claude/skills</code> and <code>~/.agents/skills</code>.</td>
+</tr>
+<tr>
+<td><strong><code>skills/situational-awareness</code></strong></td>
+<td>installed with Foundation, not here</td>
+<td>The daily brief that reads <code>profile.yaml → watch</code>. It is the <strong>first day-2 automation</strong> and is scheduled at the end of the pause (§9), before any other module.</td>
+</tr>
+<tr>
+<td>Deep Context seed</td>
+<td>R</td>
+<td><code>comms-scan</code> and the brief read the index; the connectors add today&#39;s mail.</td>
+</tr>
+<tr>
+<td>Search API keys (Exa / Brave / Parallel)</td>
+<td>O</td>
+<td>The built-in WebSearch works with no key.</td>
+</tr>
+<tr>
+<td>Gemini / OpenAI image keys</td>
+<td>O</td>
+<td>Family bundle (worksheets). ⚠️ No subscription-only path for image generation.</td>
+</tr>
+</tbody></table>
+<p>Codex-only users have no connectors, so their seed waits for the Takeout zip (§3 Path 5), which for most mailboxes arrives within the hour. The orientation brief then comes from <code>import-takeout.ts --since 30d</code>. OAuth (§3 Path 1/2) is an option on day 1 only at terminal comfort 4–5.</p>
+<h3>Module 2: Deep Context, requirements (seed day 1; grind days 1–7)</h3>
+<table>
+<thead>
+<tr>
+<th>Software / account</th>
+<th>R/O</th>
+<th>Why</th>
+<th>Evidence</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Bun + <code>bun install</code> in <code>~/deep-context-toolkit/tools</code></td>
+<td>R</td>
+<td>csv-parse, email-reply-parser, html-to-text, js-yaml</td>
+<td>public <code>tools/package.json</code></td>
+</tr>
+<tr>
+<td>Data paths</td>
+<td>R</td>
+<td>The kit sets <code>DEEP_CONTEXT_DB</code> and <code>DEEP_CONTEXT_VECTOR_DB</code> to <code>~/.agent-kit/data/deep-context/</code>, so data never lives in the repo</td>
+<td>env vars present in the public toolkit (2026-10-12)</td>
+</tr>
+<tr>
+<td><strong>Google Takeout zip</strong> <em>or</em> a <strong>Google Cloud OAuth client</strong> (Desktop type)</td>
+<td>R (one) for Gmail/Calendar <strong>history</strong></td>
+<td>Takeout is the default (§3 Path 5): no developer console, no 7-day token death. OAuth (§3 Path 1/2) adds live incremental refresh of history without re-exporting; the agent can add it later.</td>
+<td><code>tools/import-takeout.ts</code>, <code>_lib/google_oauth.ts</code></td>
+</tr>
+<tr>
+<td><strong>Keyword search, <code>recent</code>, todos</strong></td>
+<td>needs <strong>no key</strong></td>
+<td>Works on the subscription alone.</td>
+<td>public README &quot;Keys&quot; table</td>
+</tr>
+<tr>
+<td>Gemini API key</td>
+<td>O, <strong>only with consent</strong></td>
+<td><strong>Enrichment</strong> (quality/topics scoring) uses Gemini today, and so does full-history enrichment. This is the honest exception to &quot;subscription only.&quot; Also the default embeddings provider. Google&#39;s terms for its free tier allow use of submitted content to improve its products, so use a paid key for sensitive mail (<a href="https://ai.google.dev/gemini-api/terms">Gemini API terms</a>; ⚠️ re-read per cohort).</td>
+<td>README</td>
+</tr>
+<tr>
+<td><strong>Ollama</strong> (<code>ollama pull nomic-embed-text</code>)</td>
+<td>O</td>
+<td><strong>Local</strong> embeddings for meaning-based search; nothing leaves the Mac. <code>DEEP_CONTEXT_EMBED_PROVIDER=ollama</code>.</td>
+<td>README</td>
+</tr>
+<tr>
+<td>Homebrew <code>sqlite</code></td>
+<td>R for semantic search</td>
+<td>Apple&#39;s SQLite can&#39;t load <code>sqlite-vec</code>. Keyword search works without it.</td>
+<td>deep-context semantic search</td>
+</tr>
+<tr>
+<td>Voyage API key</td>
+<td>O, only with consent</td>
+<td>Rerank (free tier is enough for one person ⚠️). Without it, results stay in vector order.</td>
+<td>README</td>
+</tr>
+<tr>
+<td>Slack app per workspace (user token <code>xoxp-</code>)</td>
+<td>O</td>
+<td>Search needs a <strong>user</strong> token (<code>search:read</code>). The public README says &quot;Bot Token&quot;, which is wrong. Admin-restricted workspaces need an approval you can&#39;t speed up.</td>
+<td><code>slack.ts:844-867</code></td>
+</tr>
+<tr>
+<td><strong>Beeper Desktop</strong> + API token</td>
+<td>O (the path for iMessage/WhatsApp/Signal)</td>
+<td>Must be <strong>running</strong> whenever extraction runs. ⚠️ Its iMessage bridge likely asks for Full Disk Access.</td>
+<td><code>beeper.ts</code></td>
+</tr>
+<tr>
+<td>iMessage direct (chat.db)</td>
+<td>O, not recommended</td>
+<td>Needs Full Disk Access granted by hand to one binary. <strong>Often fails</strong> (exit 4, <code>authorization denied</code>) until the grant is made by hand. Prefer Beeper.</td>
+<td>⚠️</td>
+</tr>
+<tr>
+<td>macOS Contacts</td>
+<td>O</td>
+<td>Phone-to-name resolution; one Contacts prompt.</td>
+<td><code>contacts.ts</code></td>
+</tr>
+<tr>
+<td><strong>Fireflies</strong> (Business plan) + API key</td>
+<td>O</td>
+<td>The <strong>only supported</strong> transcript source. Granola, Otter, and Zoom are <strong>not yet supported</strong>: onboarding records them but doesn&#39;t promise them.</td>
+<td>README</td>
+</tr>
+<tr>
+<td>launchd</td>
+<td>R for the grind and for freshness</td>
+<td>The grind (<code>kit grind start</code>) and the scheduled refresh both run <code>claude -p</code> / <code>codex exec</code> on your subscription with a lock, a deadline, and a resumable state file (<code>tools/deep-context-cron.sh</code>; §2b). On the Takeout path, &quot;freshness&quot; after the grind comes from the connectors (today&#39;s mail) or a later OAuth add-on; a re-export is the fallback.</td>
+<td>README</td>
+</tr>
+</tbody></table>
+<h3>Module 3: Agent Console (proposed from evidence, e.g. travel or &quot;while I&#39;m away&quot;)</h3>
+<table>
+<thead>
+<tr>
+<th>Software / account</th>
+<th>R/O</th>
+<th>Why</th>
+<th>Evidence</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Bun + <code>bun install</code> in <code>~/agent-starter-kit/console</code></td>
+<td>R</td>
+<td>marked, js-yaml, <strong>web-push</strong>, sherpa-onnx-node (voice prints only)</td>
+<td>console <code>package.json</code></td>
+</tr>
+<tr>
+<td><strong>Tailscale</strong> (Mac + phone, free personal plan)</td>
+<td><strong>Recommended day-2 add</strong>; R for phone access</td>
+<td>Phone push needs HTTPS, which comes from <code>tailscale serve</code>. Without Tailscale, the Console works at <code>http://127.0.0.1:8787</code> on the Mac only.</td>
+<td><code>tailscale serve status</code></td>
+</tr>
+<tr>
+<td>Tailnet settings: MagicDNS + HTTPS Certificates on</td>
+<td>R for phone</td>
+<td>Admin-console toggles; the agent can click them. ⚠️ exact UI wording</td>
+<td></td>
+</tr>
+<tr>
+<td>iPhone (iOS 16.4+) or Android, Console added to Home Screen</td>
+<td>R for phone push</td>
+<td>iOS only delivers Web Push to Home-Screen web apps.</td>
+<td>⚠️</td>
+</tr>
+<tr>
+<td>VAPID keypair, per-agent bus tokens</td>
+<td>R</td>
+<td>Generated locally; never printed.</td>
+<td><code>bus-server.ts</code>, <code>bus.ts</code></td>
+</tr>
+<tr>
+<td>iTerm2</td>
+<td>O</td>
+<td>Only for &quot;type a Console reply into my live terminal session.&quot; Needs Automation → iTerm2.</td>
+<td><code>session-dashboard.ts</code></td>
+</tr>
+<tr>
+<td>OpenAI API key</td>
+<td>O</td>
+<td>Live voice and transcription in the Console. Without it, the mic button says &quot;not configured.&quot;</td>
+<td><code>bus-server.ts</code></td>
+</tr>
+<tr>
+<td>Gemini/Voyage keys</td>
+<td>O, only with consent</td>
+<td>Semantic thread search in the Console; keyword search otherwise.</td>
+<td><code>bus-server.ts</code></td>
+</tr>
+<tr>
+<td>Telegram bot</td>
+<td>O</td>
+<td>An extra push path for <code>kit distress</code>. Web Push via the Console covers the same ground.</td>
+<td><code>distress.ts</code></td>
+</tr>
+<tr>
+<td>Password-manager broker (1Password service account)</td>
+<td>O, later</td>
+<td>Advanced. Everyone starts with <code>~/.agent-kit/.env</code> (mode 600). AGENTS.md mentions a broker only once one is installed.</td>
+<td><code>op.ts</code></td>
+</tr>
+</tbody></table>
+<h3>Module 4: Employee agent (optional, later)</h3>
+<table>
+<thead>
+<tr>
+<th>Item</th>
+<th>R/O</th>
+<th>Why / reference setup</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Always-on Mac (Mac Mini M-series, 16 GB)</td>
+<td>R</td>
+<td>16 GB is enough</td>
+</tr>
+<tr>
+<td>Separate macOS user for the agent</td>
+<td>R</td>
+<td>The agent never shares your login keychain, browser, or files</td>
+</tr>
+<tr>
+<td>FileVault off + auto-login + no sleep + auto-restart</td>
+<td>R for unattended reboots</td>
+<td><strong>Honest tradeoff:</strong> with FileVault on, a reboot stops at the unlock screen. Turning it off is a human decision about physical security.</td>
+</tr>
+<tr>
+<td>Remote Login + Screen Sharing; Tailscale</td>
+<td>R</td>
+<td></td>
+</tr>
+<tr>
+<td><strong>Runner: Claude Code or Codex</strong> on the bus</td>
+<td>R</td>
+<td>v1 runs the employee as a Claude Code or Codex runner on the bus. <strong>OpenClaw is not in v1.</strong> ⚠️ Check Anthropic/OpenAI terms on one subscription across machines.</td>
+</tr>
+<tr>
+<td>Agent identity accounts (Google, GitHub, optional capped card)</td>
+<td>R for the &quot;employee&quot; role</td>
+<td>Google signup usually needs SMS verification (human). A card is a human decision.</td>
+</tr>
+</tbody></table>
+<h3>Keys at a glance (subscription-first)</h3>
+<table>
+<thead>
+<tr>
+<th>Key</th>
+<th>Needed for</th>
+<th>Without it</th>
+<th>Cost</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><em>(none)</em></td>
+<td>Foundation, Skills, Deep Context keyword search, Console, scheduled jobs</td>
+<td>—</td>
+<td>$0 beyond the subscription</td>
+</tr>
+<tr>
+<td>Gemini</td>
+<td>Deep Context <strong>enrichment</strong> + default embeddings; Console semantic search</td>
+<td>No enrichment; use Ollama for embeddings, or keyword search only</td>
+<td>pay-as-you-go; most of the $0–20</td>
+</tr>
+<tr>
+<td>Voyage</td>
+<td>Rerank</td>
+<td>Vector order</td>
+<td>free tier ⚠️</td>
+</tr>
+<tr>
+<td>OpenAI</td>
+<td>Live voice in the Console</td>
+<td>No voice</td>
+<td>usage</td>
+</tr>
+<tr>
+<td>Fireflies</td>
+<td>Transcripts</td>
+<td>No transcripts</td>
+<td>Business plan (separate subscription)</td>
+</tr>
+</tbody></table>
+<h3>Accounts at a glance</h3>
+<table>
+<thead>
+<tr>
+<th>Account</th>
+<th>Needed for</th>
+<th>Human-only part</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Claude Max <em>or</em> ChatGPT Pro</td>
+<td>Everything</td>
+<td>Payment, login click</td>
+</tr>
+<tr>
+<td>GitHub</td>
+<td>Kit repo (pilot)</td>
+<td>Accept invite; type the device code</td>
+</tr>
+<tr>
+<td>claude.ai connectors</td>
+<td>Fast 30-day seed; live mail for drafts and the daily brief</td>
+<td>One Google consent click</td>
+</tr>
+<tr>
+<td>Google Takeout</td>
+<td>Full mail + calendar history (default path)</td>
+<td>Tick Mail + Calendar, click Export, download the zip when Google emails you</td>
+</tr>
+<tr>
+<td>Google Cloud project (personal Gmail or self-admin Workspace)</td>
+<td>Optional: live incremental history refresh</td>
+<td>Cloud ToS (first time), consent clicks</td>
+</tr>
+<tr>
+<td>Company-managed Workspace</td>
+<td>—</td>
+<td><strong>Your admin</strong> must allow the OAuth app; until then, connectors only. Onboarding drafts the request for you.</td>
+</tr>
+<tr>
+<td>Slack app per workspace</td>
+<td>Slack source</td>
+<td>&quot;Allow&quot;; admin approval if restricted</td>
+</tr>
+<tr>
+<td>Beeper</td>
+<td>iMessage/WhatsApp/Signal</td>
+<td>Network logins, QR scans on phone</td>
+</tr>
+<tr>
+<td>Tailscale</td>
+<td>Phone</td>
+<td>Login; VPN approval on Mac <strong>and</strong> phone</td>
+</tr>
+</tbody></table>
+<hr>
+<h2>2. The journey</h2>
+<p>Who: <strong>T</strong> = agent in the terminal, <strong>CU</strong> = agent driving the browser (Claude in Chrome / Codex browser use), <strong>H</strong> = you.</p>
+<p>Ordering principle for <strong>every</strong> install session: the agent does everything it can → <strong>one sitting of Mac approvals</strong> → sign-ins one at a time with the agent driving the browser → verify. Payments, passwords, 2FA, and consent decisions are never delegated.</p>
+<h3>Session 1: Day 1 (~1 hour of your attention, in two sittings)</h3>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Step</th>
+<th>Who</th>
+<th>Notes</th>
+<th>Est.</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>1</td>
+<td>Paste the one prompt</td>
+<td>H</td>
+<td>After installing Claude Code or Codex (above)</td>
+<td>1 min</td>
+</tr>
+<tr>
+<td>2</td>
+<td>Xcode Command Line Tools, if git is missing: a dialog appears, click <strong>Install</strong></td>
+<td>T triggers, H clicks</td>
+<td>⚠️ May ask for your Mac password on some setups</td>
+<td>1 min attention, ~10 min wall</td>
+</tr>
+<tr>
+<td>3</td>
+<td>Install <code>gh</code> (release binary → <code>~/.local/bin</code>), <code>gh auth login --web</code>, clone the kit</td>
+<td>T + H (type the 8-char code)</td>
+<td>Only while the repo is private</td>
+<td>2 min</td>
+</tr>
+<tr>
+<td>4</td>
+<td><strong>Privacy gate</strong>: codenames for confidential matters, the never-touch list, where text may go</td>
+<td>T (conversation)</td>
+<td>Nothing is read before this</td>
+<td><strong>2 min</strong></td>
+</tr>
+<tr>
+<td>5</td>
+<td><strong>Discover sources</strong> (read-only inventory) → &quot;yes to these?&quot;</td>
+<td>T, then H (one answer)</td>
+<td>Nothing opened or logged into</td>
+<td>3 min</td>
+</tr>
+<tr>
+<td>6</td>
+<td><strong>Request Google Takeout</strong> (Mail + Calendar, export once, .zip): the agent opens the page with the boxes ticked; you click Export</td>
+<td>CU + H</td>
+<td>No Google Cloud console. The zip is both the seed&#39;s and the grind&#39;s input. Google emails you when it&#39;s ready</td>
+<td>2 min</td>
+</tr>
+<tr>
+<td>7</td>
+<td>Install Bun; clone <code>deep-context-toolkit</code> at the pinned tag, <code>bun install</code>, <code>deep-context init</code> under <code>~/.agent-kit/data/</code></td>
+<td>T</td>
+<td></td>
+<td>3 min, unattended</td>
+</tr>
+<tr>
+<td>8</td>
+<td><strong>Seed</strong>: last 30 days via the claude.ai connectors (one consent at claude.ai → Settings → Connectors) or, on Codex / without connectors, from the Takeout zip when it lands (<code>import-takeout.ts --since 30d</code>)</td>
+<td>T (+ H for one consent click)</td>
+<td>§3 Path 4 / 5</td>
+<td>10–20 min, unattended</td>
+</tr>
+<tr>
+<td>9</td>
+<td><strong>Orientation brief</strong> opens in your browser: &quot;here&#39;s your world as I see it&quot;</td>
+<td>H reads</td>
+<td>The first wow; every line links to its source</td>
+<td><strong>10 min</strong></td>
+</tr>
+<tr>
+<td>10</td>
+<td><strong>The pause</strong>: you correct the inferred profile, rank priorities, confirm VIPs and lines, pick what to watch, say what you&#39;d hand off</td>
+<td>T + H (conversation)</td>
+<td>At most 3 questions a turn, 4–5 turns</td>
+<td><strong>10 min</strong></td>
+</tr>
+<tr>
+<td>11</td>
+<td>Generate AGENTS.md, permissions, config; AGENTS.md opens in your browser; a 10-line rules card in the terminal. Install the <code>kit</code> shim; <code>kit apply --place</code> merges into your runtime config (§7)</td>
+<td>T</td>
+<td>Backs up anything it touches</td>
+<td>3 min</td>
+</tr>
+<tr>
+<td>12</td>
+<td><strong>Approvals sitting (~5 min):</strong> Contacts prompt (name resolution); &quot;Background Items Added&quot; when the daily brief / doctor / grind jobs load (leave them on); allow notifications for kit alerts ⚠️; Keychain &quot;Always Allow&quot; if the first headless run asks</td>
+<td>H</td>
+<td>The agent opens each thing and verifies it before moving on</td>
+<td>5 min</td>
+</tr>
+<tr>
+<td>13</td>
+<td><strong>Schedule the daily situational-awareness brief</strong>; run it once through launchd in baseline mode (<code>kit run brief --now --baseline</code>) and confirm it read the index</td>
+<td>T</td>
+<td>§9 explains the fallback; the baseline run reports only what it will watch</td>
+<td>2 min</td>
+</tr>
+<tr>
+<td>14</td>
+<td><strong>Start the grind</strong> (<code>kit grind start</code>) once the Takeout zip is in: estimate shown (messages, years, days, disk), keep-awake guidance, &quot;start now?&quot;</td>
+<td>T + H (one yes)</td>
+<td>§2b</td>
+<td>2 min</td>
+</tr>
+</tbody></table>
+<h3>Session 2+: build-out (as proposed; 5–20 minutes each)</h3>
+<p>Each accepted module is its own short session: preview → install → <code>kit doctor</code> → first result. Typical order and what each asks of you:</p>
+<table>
+<thead>
+<tr>
+<th>Module</th>
+<th>Agent does</th>
+<th>You do</th>
+<th>Est.</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>Skills pack</strong> (comms triage, research, drafts)</td>
+<td>Links skills, adds the comms-scan schedule, runs the first scan over your real VIPs</td>
+<td>&quot;Background Items Added&quot;</td>
+<td>5 min</td>
+</tr>
+<tr>
+<td><strong>Chat sources</strong> (Slack, Beeper for iMessage/WhatsApp/Signal)</td>
+<td>Slack app manifest per workspace; Beeper install and token; adds them to the grind</td>
+<td>Slack &quot;Allow&quot; (admin approval may take days; started, never blocking); Beeper network logins and QR scans from your phone; Beeper&#39;s own permissions. <strong>Full Disk Access is not on this list</strong>; Beeper is the chat path</td>
+<td>10–15 min</td>
+</tr>
+<tr>
+<td><strong>Semantic search / enrichment</strong> (if the gate allows)</td>
+<td><strong>Homebrew</strong>: the agent opens a new Terminal window with the installer already running (a <code>.command</code> file); then <code>brew install sqlite</code> (plus <code>ollama</code> if local). Optional keys you consented to (Gemini via AI Studio, Voyage) written to <code>.env</code> without echoing</td>
+<td>Type your Mac password once; accept the key provider&#39;s ToS</td>
+<td>10 min</td>
+</tr>
+<tr>
+<td><strong>Console + phone</strong></td>
+<td>Bun deps, bus tokens and VAPID keys into <code>.env</code>; Tailscale admin (MagicDNS + HTTPS), <code>tailscale serve</code>; a test decision card</td>
+<td>Tailscale &quot;Allow VPN Configuration&quot; on the Mac; on the phone: install Tailscale, open the Console URL, Add to Home Screen, Allow Notifications; answer the test card</td>
+<td>15 min</td>
+</tr>
+<tr>
+<td><strong>Google OAuth</strong> (optional, for live incremental history after the grind)</td>
+<td>§3 Path 1/2 driven in your signed-in Chrome; mandatory &quot;In production&quot; step plus a day-5.5 canary</td>
+<td>Cloud ToS (first time), consent clicks</td>
+<td>~12 min, ~3 of yours</td>
+</tr>
+<tr>
+<td><strong>Employee agent</strong> (optional, later)</td>
+<td>Module 4</td>
+<td>A spare Mac and a weekend</td>
+<td></td>
+</tr>
+</tbody></table>
+<h3>2b. The grind: what to expect</h3>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>What runs</strong></td>
+<td>G1 import (Takeout zip or OAuth backfill; other approved sources as access lands) → G2 enrich (only if you said Gemini OK) → G3 embed (Ollama locally by default; Gemini if consented; skipped if &quot;none&quot;) → G4 monthly summaries → G5 annual roll-ups → G6 wiki articles (<code>~/.agent-kit/wiki/{people,organizations,projects,positions,expertise,timeline}</code>) → G7 a second brief, &quot;your world, now with history&quot;</td>
+</tr>
+<tr>
+<td><strong>Order</strong></td>
+<td>Newest first, month by month, so the last year is searchable and summarized before older years start. Every month is a checkpoint.</td>
+</tr>
+<tr>
+<td><strong>Duration</strong></td>
+<td>Wall-clock depends on history size and your plan&#39;s limits. Working ranges to state, not promise: 1–2 years of mail → <strong>1–3 days</strong>; 5+ years or multiple sources → <strong>3–7 days</strong>. The agent prints an estimate (messages, years, days, disk) from the seed and the zip before asking &quot;start now?&quot; ⚠️ These ranges are from early reference runs; calibrate on the first pilot installs.</td>
+</tr>
+<tr>
+<td><strong>Tokens</strong></td>
+<td>It runs through <code>claude -p</code> / <code>codex exec</code> on <strong>your subscription</strong>, no API key. The summaries are the expensive part (a month&#39;s export can be ~1M tokens in). Expect your usage meter to sit near the top for the duration; interactive sessions share the same limits, so your agent may feel slow that week. When a limit is hit the job backs off and resumes at the reset; it never fails for that. <code>kit grind pause</code> / <code>resume</code> any time. The $100 Max tier works; it takes longer.</td>
+</tr>
+<tr>
+<td><strong>Keep awake (laptops)</strong></td>
+<td>The job pauses when the Mac sleeps and resumes at wake; nothing is lost, it&#39;s just slower. For the fastest run: lid open (or an external display), on power, and System Settings → Battery → Options → &quot;Prevent automatic sleeping on power adapter when the display is off&quot; on. The wrapper holds <code>caffeinate -i -s</code> while it runs. If you own an always-on desktop or Mini, say so: the grind can run there (it needs only the zip and the toolkit).</td>
+</tr>
+<tr>
+<td><strong>Progress</strong></td>
+<td><code>kit grind status</code> any time; a line in every daily brief (&quot;Grind: 2019–2024 imported, 2024 summarized, wiki has 38 people&quot;); <code>~/.agent-kit/grind/progress.md</code>; logs in <code>~/.agent-kit/logs/grind/</code>.</td>
+</tr>
+<tr>
+<td><strong>Resumable</strong></td>
+<td><code>~/.agent-kit/grind/state.json</code> holds the stage and month cursor; a restart, a sleep, a rate limit, or a crash resumes from there. Nothing re-runs a finished month.</td>
+</tr>
+<tr>
+<td><strong>Privacy</strong></td>
+<td>Enrichment and cloud embeddings run only if you said so at the gate; confidential keywords and privileged domains are skipped by the toolkit&#39;s skip-list (if the pinned toolkit lacks it, those stages stay off and the agent says why). The wiki is a <strong>private</strong> tree; a derived shared tree with sensitive content stripped is created only if you ever add an employee agent.</td>
+</tr>
+<tr>
+<td><strong>Done</strong></td>
+<td><code>kit doctor deep-context</code> green, <code>briefs/world.md</code> opened in your browser, <code>kit apply</code> so AGENTS.md says the history is searchable.</td>
+</tr>
+</tbody></table>
+<hr>
+<h2>3. The Google OAuth problem</h2>
+<h3>Why it stalls people</h3>
+<ol>
+<li><strong>The console is a maze:</strong> project → enable APIs → Google Auth Platform (Branding / Audience / Clients / Data access) → test users → client type. Mistakes surface later as opaque errors (<code>redirect_uri_mismatch</code>, <code>access_denied</code>, <code>org_internal</code>).</li>
+<li><strong>Client type.</strong> The code uses a loopback redirect (<code>http://127.0.0.1:{8080-8089}/oauth</code>), which needs a <strong>Desktop app</strong> client. (The function is misleadingly named <code>start_device_auth</code>.)</li>
+<li><strong>&quot;Testing&quot; status = refresh tokens die every 7 days.</strong> Observed in practice: a token granted on day 0 returned <code>invalid_grant</code> exactly 7 days later. <strong>A friend who leaves the project in Testing will have their setup silently die on day 8.</strong></li>
+<li><strong>The scary unverified-app screen</strong> (&quot;Google hasn&#39;t verified this app&quot;). That&#39;s fine for personal use, but people bail there unless they&#39;ve been warned.</li>
+<li><strong>Over-broad scopes.</strong> Request only what the chosen modules need (Deep Context: <code>gmail.readonly</code> + <code>calendar.readonly</code>).</li>
+</ol>
+<h3>Which path, by person</h3>
+<table>
+<thead>
+<tr>
+<th>Person</th>
+<th>Seed (day 1, first hour)</th>
+<th>Full history (the grind)</th>
+<th>Live refresh later (optional)</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Claude Code, terminal comfort 1–3</td>
+<td><strong>Path 4</strong> (connectors, read-only)</td>
+<td><strong>Path 5</strong> (Takeout zip)</td>
+<td>Path 1 or 2, agent-driven, ~3 minutes of clicks, proposed only if they want incremental history without re-exporting</td>
+</tr>
+<tr>
+<td>Comfort 4–5</td>
+<td>Path 4, or Path 1/2 if they want OAuth today</td>
+<td>Path 5, or the OAuth backfill</td>
+<td>—</td>
+</tr>
+<tr>
+<td>Company-managed Workspace</td>
+<td>Path 4</td>
+<td><strong>Path 5</strong> (Takeout usually works unless the admin disabled it ⚠️)</td>
+<td>Only after their admin approves an OAuth app. Onboarding drafts the request as a doc.</td>
+</tr>
+<tr>
+<td>Codex-only</td>
+<td><strong>Path 5</strong> with <code>--since 30d</code> as soon as the zip lands</td>
+<td>Path 5</td>
+<td>Path 1 or 2</td>
+</tr>
+</tbody></table>
+<p><strong>Path 1 (personal @gmail.com): the agent drives the Cloud console through Claude in Chrome; the human clicks only the decision points.</strong></p>
+<table>
+<thead>
+<tr>
+<th>Step</th>
+<th>Who</th>
+<th>Detail</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>1</td>
+<td>CU</td>
+<td>New project &quot;my-agents&quot; in the person&#39;s signed-in Chrome.</td>
+</tr>
+<tr>
+<td>2</td>
+<td><strong>H</strong></td>
+<td>First-time Cloud Terms of Service. The agent stops and asks; it never accepts terms for you.</td>
+</tr>
+<tr>
+<td>3</td>
+<td>CU</td>
+<td>Enable Gmail API and Google Calendar API (Drive only if a module needs it).</td>
+</tr>
+<tr>
+<td>4</td>
+<td>CU</td>
+<td>Branding: app name, support and developer email = theirs.</td>
+</tr>
+<tr>
+<td>5</td>
+<td>CU</td>
+<td>Audience: <strong>External</strong>, add them as a test user, then <strong>Publish app → In production</strong>. ⚠️ Exact banner copy may differ; verification is not required to stop the 7-day expiry.</td>
+</tr>
+<tr>
+<td>6</td>
+<td>CU</td>
+<td>Clients → Create → <strong>Desktop app</strong> → Download JSON, moved to <code>~/.agent-kit/google_credentials.json</code> (mode 600). The secret never passes through the chat.</td>
+</tr>
+<tr>
+<td>7</td>
+<td>T + <strong>H</strong></td>
+<td>The loopback listener starts (backgrounded; 5-minute window). The person clicks Advanced → Go to my-agents → scopes → Continue.</td>
+</tr>
+<tr>
+<td>8</td>
+<td>T</td>
+<td>Doctor G1–G3; record the grant time so <code>kit doctor</code> warns at day 5.5.</td>
+</tr>
+</tbody></table>
+<p><strong>Path 2 (Workspace you administer yourself): &quot;Internal&quot; user type.</strong> No test users, no unverified screen, no expiry.</p>
+<p><strong>Path 3 (<code>gws auth setup</code>):</strong> requires gcloud (~500 MB) plus a second consent. ⚠️ Not verified end to end. Not recommended; test during the pilot.</p>
+<p><strong>Path 4 (no Google OAuth; the fast seed):</strong> claude.ai Gmail + Calendar connectors, authorized once in claude.ai settings. The agent reads the last 30 days read-only to build the orientation brief, and uses them afterwards for live triage, drafts, and the daily brief. Not for bulk history, and not available in Codex.</p>
+<p><strong>Path 5 (no Google OAuth; the full history): Google Takeout.</strong> The person opens <a href="https://takeout.google.com">takeout.google.com</a> (the agent can open it with everything deselected except <strong>Mail</strong> and <strong>Calendar</strong>), chooses &quot;export once&quot;, .zip, 2 GB splits, and clicks Export. Google emails a download link: minutes for small mailboxes, hours for multi-GB ones (⚠️ occasionally a day). The agent moves the zip to <code>~/.agent-kit/data/takeout/</code> and runs <code>bun ~/deep-context-toolkit/tools/import-takeout.ts &lt;zip&gt; --since 30d</code> (seed) and later <code>import-takeout.ts &lt;zip&gt;</code> (grind). Mail arrives as mbox with Gmail labels; Calendar as .ics per calendar. No developer console, no unverified-app screen, no 7-day token death, and it works for Codex-only users and most company Workspaces. Downsides: no live incremental refresh (the connectors cover today&#39;s mail; a later OAuth add-on or a re-export covers the rest), and the zip must be downloaded by the person (it&#39;s their Google login). ⚠️ <code>import-takeout.ts</code> is new (October 2026); verify on a real multi-GB export during the pilot.</p>
+<hr>
+<h2>4. Computer-use automation plan</h2>
+<table>
+<thead>
+<tr>
+<th>Option</th>
+<th>Runtime</th>
+<th>Drives</th>
+<th>OS permissions</th>
+<th>Fit</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>Claude in Chrome</strong></td>
+<td>Claude Code</td>
+<td>The person&#39;s own signed-in Chrome</td>
+<td>None at OS level; extension install + per-site grants. ⚠️ plan-tier availability</td>
+<td><strong>Primary.</strong> No passwords flow through the agent.</td>
+</tr>
+<tr>
+<td><strong>Codex browser / computer use</strong> (<code>browser_use</code>, <code>computer_use</code> stable in 0.159.3)</td>
+<td>Codex</td>
+<td>In-app or external browser, or desktop</td>
+<td>Desktop use needs Accessibility + Screen Recording ⚠️</td>
+<td>Primary for Codex-only users</td>
+</tr>
+<tr>
+<td>chrome-devtools-mcp over CDP</td>
+<td>Either</td>
+<td>A separate agent Chrome profile</td>
+<td>None</td>
+<td>Employee machine only</td>
+</tr>
+<tr>
+<td>Desktop-level computer use</td>
+<td>Claude desktop ⚠️ / Codex app</td>
+<td>System Settings, native apps</td>
+<td>Accessibility + Screen Recording</td>
+<td><strong>Not for approvals.</strong> An agent toggling its own privacy permissions is exactly what a person should do by hand. Use it only to open the right pane.</td>
+</tr>
+</tbody></table>
+<p>Rules for the operating agent:</p>
+<ul>
+<li>Use its own tab. Observe → act → observe, with screenshots.</li>
+<li><strong>Stop and hand to the human</strong> at ToS, payment, password/2FA/passkey, OAuth consent, anything that says &quot;verify,&quot; and admin approvals.</li>
+<li><strong>Never open the person&#39;s <code>browser.no_go_domains</code></strong> (their banks, brokerage, payroll). Onboarding also tells them never to grant the extension access to those sites.</li>
+<li>Secrets go page → file, never into the transcript. Page content is untrusted data.</li>
+<li>Time-boxed steps (OAuth loopback, device codes) start only after the person says &quot;ready.&quot;</li>
+</ul>
+<hr>
+<h2>5. <code>kit doctor</code> checklist</h2>
+<p><code>kit doctor</code> runs all checks relevant to installed modules; <code>kit doctor &lt;module&gt;</code> runs one group. Each prints ✅ / ⚠️ / ❌ plus a <strong>named human fix</strong>, and <strong>never prints a secret value</strong>. Paths: <code>KR=~/agent-starter-kit</code>, <code>KH=~/.agent-kit</code>, <code>DC=~/deep-context-toolkit</code>.</p>
+<table>
+<thead>
+<tr>
+<th>Module arg</th>
+<th>Groups</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>foundation</code></td>
+<td>Base, Runtime, Foundation</td>
+</tr>
+<tr>
+<td><code>skills</code></td>
+<td>Skills, Scheduling</td>
+</tr>
+<tr>
+<td><code>deep-context</code></td>
+<td>Deep Context (incl. seed, Takeout, grind, wiki), Google, Sources</td>
+</tr>
+<tr>
+<td><code>console</code></td>
+<td>Console</td>
+</tr>
+<tr>
+<td><code>employee</code></td>
+<td>Employee</td>
+</tr>
+</tbody></table>
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>Check</th>
+<th>Command (read-only)</th>
+<th>Pass</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>Base</strong></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>B1</td>
+<td>Apple silicon + macOS</td>
+<td><code>uname -m; sw_vers -productVersion</code></td>
+<td><code>arm64</code>; ≥ 14</td>
+</tr>
+<tr>
+<td>B2</td>
+<td>Free disk</td>
+<td><code>df -g ~</code></td>
+<td>≥ 10 GB</td>
+</tr>
+<tr>
+<td>B3</td>
+<td>Command Line Tools</td>
+<td><code>xcode-select -p</code></td>
+<td>exit 0</td>
+</tr>
+<tr>
+<td>B4</td>
+<td>Bun</td>
+<td><code>~/.bun/bin/bun --version</code></td>
+<td>≥ 1.3</td>
+</tr>
+<tr>
+<td>B5</td>
+<td>git / gh</td>
+<td><code>git --version; gh auth status</code></td>
+<td>logged in (pilot)</td>
+</tr>
+<tr>
+<td>B6</td>
+<td>Kit and pins</td>
+<td><code>git -C $KR status --porcelain</code>; DC tag == <code>deps.json</code></td>
+<td>clean; pinned</td>
+</tr>
+<tr>
+<td><strong>Runtime</strong></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>R1</td>
+<td>Claude Code</td>
+<td><code>~/.local/bin/claude --version</code></td>
+<td>exit 0</td>
+</tr>
+<tr>
+<td>R2</td>
+<td>Subscription works headless</td>
+<td><code>claude -p &quot;reply ok&quot; --model haiku</code></td>
+<td><code>ok</code></td>
+</tr>
+<tr>
+<td>R3</td>
+<td>Codex (if used)</td>
+<td><code>codex --version; codex login status</code></td>
+<td>logged in</td>
+</tr>
+<tr>
+<td>R4</td>
+<td>Codex bridge (if used)</td>
+<td><code>grep -q &quot;BEGIN agent-starter-kit&quot; ~/.codex/AGENTS.md &amp;&amp; test -f ~/.codex/rules/agent-starter-kit.rules</code></td>
+<td>present</td>
+</tr>
+<tr>
+<td><strong>Foundation</strong></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>F1</td>
+<td>Instructions placed</td>
+<td><code>test -s $KH/AGENTS.md &amp;&amp; grep -q &quot;BEGIN agent-starter-kit&quot; ~/.claude/CLAUDE.md</code></td>
+<td>both</td>
+</tr>
+<tr>
+<td>F2</td>
+<td>Deny list merged</td>
+<td><code>jq &#39;.permissions.deny|length&#39; ~/.claude/settings.json</code></td>
+<td>≥ kit&#39;s count</td>
+</tr>
+<tr>
+<td>F3</td>
+<td>Secrets file locked</td>
+<td><code>stat -f %Lp $KH/.env</code></td>
+<td><code>600</code></td>
+</tr>
+<tr>
+<td>F4</td>
+<td>Trash dir</td>
+<td><code>test -d $KH/_trash</code></td>
+<td>exists</td>
+</tr>
+<tr>
+<td>F5</td>
+<td><code>.env</code> read denies present</td>
+<td><code>jq &#39;[.permissions.deny[]|select(test(&quot;env&quot;))]|length&#39; ~/.claude/settings.json</code></td>
+<td>≥ 20</td>
+</tr>
+<tr>
+<td>F6</td>
+<td>Import resolves</td>
+<td><code>claude -p &quot;From your instructions: the codename of my first confidential matter, or none&quot; --model haiku</code></td>
+<td>matches <code>profile.yaml</code></td>
+</tr>
+<tr>
+<td>F7</td>
+<td>AGENTS.md is current</td>
+<td><code>kit.config.json generated_at</code> ≥ <code>profile.yaml</code> mtime; installed list == <code>modules.status</code></td>
+<td>true (else <code>kit apply</code>)</td>
+</tr>
+<tr>
+<td><strong>Skills</strong></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>K1</td>
+<td>Skills linked</td>
+<td>each kit skill resolves under <code>~/.claude/skills</code> and/or <code>~/.agents/skills</code></td>
+<td>all</td>
+</tr>
+<tr>
+<td>K2</td>
+<td>Connectors (connectors path)</td>
+<td><code>claude -p</code> probe: Gmail + Calendar connector tools listed <strong>and</strong> a 1-result search succeeds</td>
+<td>✅; ⚠️ = &quot;authorize in claude.ai → Settings → Connectors&quot;</td>
+</tr>
+<tr>
+<td><strong>Deep Context</strong></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>D1</td>
+<td>Deps</td>
+<td><code>test -d $DC/tools/node_modules</code></td>
+<td>exists</td>
+</tr>
+<tr>
+<td>D2</td>
+<td>DB fresh</td>
+<td><code>DEEP_CONTEXT_DB=$KH/data/deep-context/deep_context.db bun $DC/tools/deep-context.ts status</code></td>
+<td>each source &lt; 24 h</td>
+</tr>
+<tr>
+<td>D3</td>
+<td>Homebrew SQLite (semantic only)</td>
+<td><code>test -f /opt/homebrew/opt/sqlite/lib/libsqlite3.dylib</code></td>
+<td>exists</td>
+</tr>
+<tr>
+<td>D4</td>
+<td>Embeddings provider matches consent</td>
+<td><code>kit.config consent.embeddings</code> vs env</td>
+<td>equal</td>
+</tr>
+<tr>
+<td>D5</td>
+<td>Gemini key (only if consented)</td>
+<td>1-token test call ⚠️ exact command</td>
+<td>200</td>
+</tr>
+<tr>
+<td>D6</td>
+<td>Seed index present</td>
+<td><code>deep-context.ts status</code> shows ≥1 source with rows in the last 30 days; <code>$KH/briefs/orientation.md</code> exists</td>
+<td>both</td>
+</tr>
+<tr>
+<td>D7</td>
+<td>Takeout zip (Takeout path)</td>
+<td><code>test -s $KH/data/takeout/*.zip</code></td>
+<td>present</td>
+</tr>
+<tr>
+<td>D8</td>
+<td>Grind state sane</td>
+<td><code>$KH/grind/state.json</code> parses; status ∈ {running, paused, rate-limited, done}; cursor advanced in the last 24 h unless paused/done</td>
+<td>✅; ⚠️ = stalled (named fix: <code>kit grind resume</code>, or keep the Mac awake)</td>
+</tr>
+<tr>
+<td>D9</td>
+<td>Wiki built</td>
+<td><code>$KH/wiki/people/</code> non-empty once <code>grind.stages.wiki_articles == done</code></td>
+<td>non-empty</td>
+</tr>
+<tr>
+<td><strong>Google</strong></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>G1</td>
+<td>Client creds present</td>
+<td><code>test -f $KH/google_credentials.json</code></td>
+<td>present</td>
+</tr>
+<tr>
+<td>G2</td>
+<td>Token works</td>
+<td><code>gmail.ts search &quot;in:inbox&quot; --limit 1 &lt;/dev/null</code> with a 60 s timeout</td>
+<td>exit 0, no prompt</td>
+</tr>
+<tr>
+<td>G3</td>
+<td>Not stuck in Testing</td>
+<td>warn if <code>google_granted_at</code> &gt; 5.5 days and G2 never succeeded past day 7</td>
+<td>✅ after day 8</td>
+</tr>
+<tr>
+<td><strong>Sources</strong></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>S1</td>
+<td>Slack per workspace</td>
+<td><code>slack.ts -w &lt;name&gt; list channels --limit 1</code></td>
+<td>exit 0</td>
+</tr>
+<tr>
+<td>S2</td>
+<td>Beeper running + token</td>
+<td><code>curl localhost:23373</code> + authed probe</td>
+<td>200</td>
+</tr>
+<tr>
+<td>S3</td>
+<td>Contacts export</td>
+<td><code>test -s $KH/data/deep-context/contacts.db</code></td>
+<td>non-empty</td>
+</tr>
+<tr>
+<td><strong>Console</strong></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>C1</td>
+<td>Bus up</td>
+<td><code>bun $KR/tools/bus.ts whoami</code></td>
+<td>identity</td>
+</tr>
+<tr>
+<td>C2</td>
+<td>Console local</td>
+<td><code>curl -s -o /dev/null -w &#39;%{http_code}&#39; http://127.0.0.1:8787/app</code></td>
+<td>200/302</td>
+</tr>
+<tr>
+<td>C3</td>
+<td>Tailscale up (if installed)</td>
+<td><code>tailscale status --json | jq -r .BackendState</code></td>
+<td><code>Running</code></td>
+</tr>
+<tr>
+<td>C4</td>
+<td>HTTPS serve</td>
+<td><code>tailscale serve status</code></td>
+<td><code>:8443 → localhost:8787</code></td>
+</tr>
+<tr>
+<td>C5</td>
+<td>Phone push end to end</td>
+<td>test decision card, wait ≤ 5 min</td>
+<td>answered</td>
+</tr>
+<tr>
+<td><strong>Scheduling</strong></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>L1</td>
+<td>Kit LaunchAgents loaded</td>
+<td><code>launchctl print gui/$UID/&lt;label&gt;</code></td>
+<td>last exit 0</td>
+</tr>
+<tr>
+<td>L2</td>
+<td>Background Items not disabled</td>
+<td><code>launchctl print-disabled gui/$UID</code></td>
+<td>none disabled</td>
+</tr>
+<tr>
+<td>L3</td>
+<td>Daily brief produced</td>
+<td><code>$KH/briefs/latest.html</code> &lt; 26 h old</td>
+<td>fresh</td>
+</tr>
+<tr>
+<td>L4</td>
+<td>Watch list present</td>
+<td><code>profile.yaml → watch.monitors</code> non-empty and includes <code>system-health</code></td>
+<td>true</td>
+</tr>
+<tr>
+<td><strong>Employee</strong></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>M1</td>
+<td>Reachable</td>
+<td><code>ssh -o BatchMode=yes &lt;agent&gt;@&lt;tailscale-ip&gt; true</code></td>
+<td>exit 0</td>
+</tr>
+<tr>
+<td>M2</td>
+<td>Survives reboot</td>
+<td>FileVault / autologin / sleep / autorestart</td>
+<td>as configured</td>
+</tr>
+<tr>
+<td>M3</td>
+<td>Runner login</td>
+<td><code>claude -p &quot;ok&quot;</code> or <code>codex exec &quot;ok&quot;</code> over ssh</td>
+<td>ok</td>
+</tr>
+</tbody></table>
+<p><code>kit doctor</code> runs daily (scheduled at the end of the pause, SKILL Phase 3). On any ❌ it puts one plain-language fix at the top of the next brief and calls <code>kit distress</code> if the fix is time-sensitive.</p>
+<hr>
+<h2>6. The <code>kit</code> CLI</h2>
+<p>Installed in Foundation as <code>~/.local/bin/kit</code>, a shim that runs <code>bun ~/agent-starter-kit/tools/kit.ts &quot;$@&quot;</code>. It is allow-listed in the kit permissions. Every command is safe to run any time.</p>
+<table>
+<thead>
+<tr>
+<th>Command</th>
+<th>What it does</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>kit status</code></td>
+<td>One screen: each module&#39;s status, last brief and last doctor run, pending human fixes, the kit version, and the pinned deep-context tag. Read-only.</td>
+</tr>
+<tr>
+<td><code>kit doctor [module…] [--json] [--quiet]</code></td>
+<td>The §5 checks for installed modules, or the named ones. Exit 0 = all green. Never prints secret values.</td>
+</tr>
+<tr>
+<td><code>kit update</code></td>
+<td><code>git -C ~/agent-starter-kit pull --ff-only</code> → check out the deep-context tag pinned in <code>deps.json</code> → <code>bun install</code> where lockfiles changed → <code>kit apply</code> → <code>kit doctor</code>. Refuses if the kit repo has local edits (it tells you to move them into <code>~/.agent-kit/skills/</code>). Prints a changelog, including any model-pin change.</td>
+</tr>
+<tr>
+<td><code>kit apply [--place] [--dry-run]</code></td>
+<td>Regenerates every file from <code>~/.agent-kit/profile.yaml</code> + <code>modules.status</code> (SKILL Phase 3, &quot;Generate&quot;), shows a diff, backs up, and re-places the kit blocks (§7). Idempotent. Runs automatically after every module install and every <code>kit update</code>.</td>
+</tr>
+<tr>
+<td><code>kit grind start|status|pause|resume</code></td>
+<td>Starts the multi-day history build as a launchd job (lock, <code>caffeinate</code>, state file, per-stage logs, rate-limit back-off), or reports/controls it. <code>status</code> prints stage, month cursor, counts, last error, and an updated estimate. Safe to run any time.</td>
+</tr>
+<tr>
+<td><code>kit distress &quot;&lt;msg&gt;&quot; [--kind blocked|stuck|error|question] [--wait &lt;min&gt;]</code></td>
+<td>Reaches the person through the channels <strong>actually installed</strong>, in order: Web Push (Console + Tailscale), Telegram (if set up), a macOS notification ⚠️ (<code>osascript display notification</code>), and always the top of the next brief + <code>~/.agent-kit/logs/distress.jsonl</code>. It prints which channels delivered. Self-throttles. Before the Console is on the phone, <strong>it does not reach the phone</strong>, and AGENTS.md says so.</td>
+</tr>
+</tbody></table>
+<p>Helpers: <code>kit run &lt;routine&gt; [--now]</code> (run a scheduled routine through its launchd wrapper), <code>kit routines [list|on|off &lt;name&gt;]</code>, <code>kit render &lt;file.md&gt;</code> (render to HTML and open it in the browser).</p>
+<hr>
+<h2>7. Placing generated files (merge, never clobber)</h2>
+<p><code>kit apply --place</code> (SKILL Phase 3, &quot;Place&quot;) does this. Before touching any target, it copies the original to <code>~/.agent-kit/_trash/pre-kit-&lt;timestamp&gt;/</code>.</p>
+<table>
+<thead>
+<tr>
+<th>Target</th>
+<th>Absent</th>
+<th>Present</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>~/.claude/CLAUDE.md</code></td>
+<td>Created with only the kit block</td>
+<td>Kit block appended, or replaced in place if one already exists. Content outside <code>&lt;!-- BEGIN agent-starter-kit --&gt;</code>…<code>&lt;!-- END agent-starter-kit --&gt;</code> is never touched. The block imports <code>@~/.agent-kit/AGENTS.md</code> and <code>@~/.agent-kit/AGENTS.local.md</code>. ⚠️ Home-relative <code>@~/</code> imports are believed to work in current Claude Code; doctor F6 proves it on each machine.</td>
+</tr>
+<tr>
+<td><code>~/.claude/settings.json</code> (user scope)</td>
+<td>Created with kit permissions only</td>
+<td><code>permissions.allow/deny/ask</code> union-merged and de-duplicated; your entries are kept. Deny wins in Claude Code, so a kit deny overrides a broader allow of yours (<code>kit apply</code> lists any such overlaps).</td>
+</tr>
+<tr>
+<td><code>~/.codex/AGENTS.md</code></td>
+<td>Created with a kit block holding the <strong>full text</strong> of <code>AGENTS.md</code> + <code>AGENTS.local.md</code> (Codex has no imports)</td>
+<td>Kit block appended or replaced</td>
+</tr>
+<tr>
+<td><code>~/.codex/config.toml</code></td>
+<td>Created from the kit block</td>
+<td>Block inserted at the top. Your existing values are kept unless they&#39;re less safe (<code>danger-full-access</code>, or <code>approval_policy = &quot;never&quot;</code> for interactive use). In that case it asks once.</td>
+</tr>
+<tr>
+<td><code>~/.codex/rules/agent-starter-kit.rules</code></td>
+<td>Written</td>
+<td>Replaced (kit-owned file)</td>
+</tr>
+<tr>
+<td><code>~/.claude/skills/&lt;name&gt;</code>, <code>~/.agents/skills/&lt;name&gt;</code></td>
+<td>Symlink to the kit or personal skill</td>
+<td>A name collision with a non-kit entry is skipped and reported</td>
+</tr>
+</tbody></table>
+<p>To remove the kit: delete the delimited blocks and the kit-owned rules file and skill symlinks. Your backups are in <code>_trash</code>.</p>
+<hr>
+<h2>8. Codex configuration surface</h2>
+<p>Checked against <code>codex --help</code> / <code>codex exec --help</code> on codex-cli 0.159.3 (2026-10-12):</p>
+<table>
+<thead>
+<tr>
+<th>Setting</th>
+<th>Values</th>
+<th>Kit choice</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>sandbox_mode</code> (<code>-s</code>)</td>
+<td><code>read-only</code>, <code>workspace-write</code>, <code>danger-full-access</code></td>
+<td><code>workspace-write</code></td>
+</tr>
+<tr>
+<td><code>approval_policy</code> (<code>-a</code>, interactive only)</td>
+<td><code>on-request</code>, <code>never</code></td>
+<td><code>on-request</code> interactive. Scheduled <code>codex exec</code> runs pass <code>-c approval_policy=&quot;never&quot;</code>, so a blocked command fails back to the model instead of hanging.</td>
+</tr>
+<tr>
+<td><code>[sandbox_workspace_write]</code></td>
+<td><code>network_access</code>, <code>writable_roots</code></td>
+<td><code>network_access = true</code> (kit tools call APIs), <code>writable_roots = [&quot;~/.agent-kit&quot;]</code></td>
+</tr>
+<tr>
+<td><code>~/.codex/rules/*.rules</code></td>
+<td><code>prefix_rule(pattern, decision = allow|prompt|forbidden)</code></td>
+<td><code>agent-starter-kit.rules</code>: forbid recursive <code>rm</code>, <code>sudo</code>, force-push, <code>launchctl unload/remove/bootout</code>, keychain reads, <code>printenv</code>/<code>env</code>; prompt for <code>brew install</code>, <code>launchctl load/bootstrap</code>, <code>git reset/clean</code></td>
+</tr>
+<tr>
+<td>Never used</td>
+<td><code>--dangerously-bypass-approvals-and-sandbox</code></td>
+<td>—</td>
+</tr>
+</tbody></table>
+<p><strong>Honest gaps on Codex:</strong> prefix rules can&#39;t match a filename anywhere in a command, so the Claude-side <code>.env</code> read denies have no exact equivalent. Draft-only email is enforced by AGENTS.md, not by a rule. The claude.ai connectors aren&#39;t available. Codex users get the same instructions, with fewer mechanical backstops.</p>
+<hr>
+<h2>9. Scheduling: model pins, brief channels, and the headless-connector question</h2>
+<ul>
+<li><strong>Wrapper:</strong> each routine is a launchd job running a small shell wrapper (lock, deadline, per-run log in <code>~/.agent-kit/logs/</code>, and a ledger line <code>kit status</code> reads).</li>
+<li><strong>Model pins</strong> (in <code>kit.config.json</code>; <code>kit update</code> announces any change): Claude <code>claude -p --model claude-opus-5-5</code>; Codex <code>codex exec -m gpt-6-astra -s workspace-write -c approval_policy=&quot;never&quot;</code>. Both run on the subscription, with no API key.</li>
+<li><strong>The daily brief is the situational-awareness skill</strong> (<code>~/agent-starter-kit/skills/situational-awareness/</code>), scheduled at the end of the pause as the <strong>first day-2 automation</strong>. It reads <code>profile.yaml → watch</code> (the monitors the person picked), the index, the calendar, the live connectors if present, the web for field/entity monitors, and the system&#39;s own health (<code>kit doctor</code>, grind state), and reports <em>movement</em> only. Its <strong>first run is baseline-only</strong> (<code>kit run brief --now --baseline</code>: watermarks + per-person baselines, no backlog reported as new), and its <strong>Friday edition appends a ≤8-line watchlist review</strong> (what fired, what was acted on, proposed drops/adds). The skill&#39;s <code>SessionStart</code> injector (<code>tools/sa-inject.ts</code>) is merged into <code>~/.claude/settings.json</code> hooks (and <code>~/.codex/hooks.json</code>) by <code>kit apply --place</code> without touching the person&#39;s own hooks. Later modules (comms scan, doctor) feed it rather than replacing it.</li>
+<li><strong>Brief channels:</strong> <code>browser-page</code> (default: <code>~/.agent-kit/briefs/latest.html</code>, opened when the run finishes and at login), <code>email-to-self</code> (only with explicit consent; it&#39;s a <em>draft</em> to yourself if you chose draft-only), <code>console</code> (once installed), or <code>terminal-file</code>.</li>
+<li><strong>The grind wrapper</strong> (<code>kit grind</code>) is the same shape: a launchd job with a lock, a state file, <code>caffeinate -i -s</code> for the duration, per-stage logs, and back-off on rate limits (§2b).</li>
+<li><strong>Laptop asleep:</strong> launchd runs a missed calendar job when the Mac next wakes. If the lid is closed at 7:00, the brief appears when you open it. Onboarding says this plainly.</li>
+<li><strong>Headless connectors (QA fix 3), what we know:</strong> a headless <code>claude -p</code> test run listed the claude.ai connector servers (Gmail, Google Calendar, Drive) and loaded the authorized ones&#39; tools. So the connectors <em>do</em> load headless. ⚠️ Still unverified: an authorized Gmail read inside <code>claude -p</code> <strong>under launchd</strong> (a different environment, with keychain access). Because of that, the end of the pause (SKILL Phase 3) requires <code>kit run brief --now</code> through the real wrapper and checks that mail was read. If it wasn&#39;t, the brief falls back to the seed index plus calendar (or calendar only), and the person is told which they&#39;ll get.</li>
+</ul>
+<hr>
+<h2>Findings worth acting on</h2>
+<ol>
+<li>⚠️ <strong>Direct iMessage reads usually fail</strong> (exit 4, <code>authorization denied</code>) until a human grants Full Disk Access to the reader binary (System Settings → Full Disk Access → <code>+</code>). This is also why the kit prefers Beeper.</li>
+<li><strong>Testing-mode 7-day token death</strong> is the #1 thing to design out (§3): a mandatory publish step plus a canary.</li>
+<li><strong>Public deep-context README:</strong> the Slack section says &quot;Bot Token&quot; but search needs a user token, and it calls the loopback flow &quot;device auth.&quot;</li>
+<li>Rename <code>start_device_auth</code> → <code>start_loopback_auth</code>.</li>
+<li>Make Google scopes module-driven, not <code>ALL_GOOGLE_SCOPES</code>.</li>
+<li><strong>Deep Context needs a third-party skip-list</strong> (confidential keywords/domains excluded from enrichment and embeddings) and a &quot;calendar yes, messages no&quot; family mode. Until those exist, <code>kit apply</code> refuses enrichment and Gemini embeddings when confidential matters are recorded.</li>
+<li>Verify an authorized claude.ai Gmail connector read under launchd at the first pilot install (§9).</li>
+<li>The only API key between Deep Context and &quot;subscription only&quot; is <strong>Gemini, for enrichment</strong>. Keyword search needs nothing, and embeddings can be local (Ollama).</li>
+<li><strong>Google Takeout is the day-1 history path</strong> (Path 5): it removes the Cloud console, the unverified-app screen, and the 7-day token death from the critical path, and it works for Codex-only users. <code>tools/import-takeout.ts</code> (mbox + .ics, <code>--since</code>) is the piece being built; the pilot must verify it on a multi-GB export.</li>
+<li><strong>The grind is a product surface, not a background detail</strong>: estimate before starting, newest-first, resumable state, progress in the brief, keep-awake guidance for laptops, and an offer to run it on an always-on Mac if they have one (§2b).</li>
+</ol>
+<h2>Sources (local evidence)</h2>
+<ul>
+<li><a href="https://github.com/labenz/deep-context-toolkit">deep-context-toolkit</a> <code>README.md</code> (keys table, Ollama option, <code>DEEP_CONTEXT_*</code> env vars), <code>tools/_lib/google_oauth.ts</code>, <code>tools/slack.ts</code>, <code>tools/beeper.ts</code>, <code>tools/contacts.ts</code></li>
+<li>Agent Console source (<code>package.json</code>, <code>bus-server.ts</code>, <code>bus.ts</code>, <code>distress.ts</code>)</li>
+<li><code>codex --help</code>, <code>codex exec --help</code>, <code>codex execpolicy --help</code> (codex-cli 0.159.3), Codex <code>.rules</code> syntax, 2026-10</li>
+<li>Headless connector probe: <code>claude -p … --setting-sources local</code>, 2026-10</li>
+<li><a href="https://ai.google.dev/gemini-api/terms">Gemini API Additional Terms</a></li>
+</ul>
+
+</body>
+</html>

@@ -1,0 +1,56 @@
+{
+  "_comment": "Kit permissions + the SA SessionStart hook for Claude Code. Rendered to ~/.agent-kit/generated/settings.kit.json; `kit apply` MERGES the permissions arrays and the hooks block into ~/.claude/settings.json (union, de-duplicated; existing entries and hooks are kept; a backup goes to ~/.agent-kit/_trash/ first). Deny always wins over allow in Claude Code. The agent never removes deny entries. Codex equivalents: codex-config.toml.tmpl + codex-kit.rules.tmpl.",
+  "permissions": {
+    "allow": [
+      "Bash(kit status*)", "Bash(kit doctor*)", "Bash(kit distress*)", "Bash(kit apply*)", "Bash(kit grind status*)", "Bash(kit grind pause*)", "Bash(kit grind resume*)", "Bash(kit run *)",
+      "Bash(bun ~/agent-starter-kit/tools/*)", "Bash(bun ~/.agent-kit/skills/*)",
+      {{#if (ne modules.deep_context_state "none")}}"Bash(deep-context *)", "Bash(bun ~/deep-context-toolkit/tools/*)",{{/if}}
+      "Bash(git -C ~/.agent-kit status*)", "Bash(git -C ~/.agent-kit diff*)", "Bash(git -C ~/.agent-kit log*)", "Bash(git -C ~/.agent-kit add*)", "Bash(git -C ~/.agent-kit commit*)",
+      "Bash(ls*)", "Bash(wc*)", "Bash(du*)", "Bash(find *)", "Bash(grep *)", "Bash(rg *)", "Bash(cat *)", "Bash(head *)", "Bash(tail *)",
+      "Bash(mkdir*)", "Bash(cp *)", "Bash(mv *)", "Bash(touch *)",
+      "Bash(which *)", "Bash(brew list*)", "Bash(brew info*)",
+      {{#if (gte setup.terminal_comfort 3)}}"Bash(bun *)", "Bash(node *)", "Bash(python3 *)", "Bash(git status*)", "Bash(git diff*)", "Bash(git log*)", "Bash(git add*)", "Bash(git commit*)", "Bash(git pull*)",{{/if}}
+      "Read", "Glob", "Grep", "Edit(~/.agent-kit/**)", "Write(~/.agent-kit/**)",
+      "WebSearch", "WebFetch"
+    ],
+    "deny": [
+      "Bash(rm -rf*)", "Bash(rm -r*)", "Bash(rm -fr*)", "Bash(rm -R*)",
+      "Bash(sudo*)",
+      "Bash(git push --force*)", "Bash(git push -f*)", "Bash(git reset --hard*)", "Bash(git clean*)",
+      "Bash(*rmtree*)", "Bash(*os.remove*)", "Bash(*fs.rm*)", "Bash(*unlink*)",
+      "Bash(launchctl unload*)", "Bash(launchctl remove*)", "Bash(launchctl bootout*)",
+
+      "Read(**/.env)", "Read(**/.env.*)", "Edit(**/.env)", "Write(**/.env)", "Read(~/.ssh/**)", "Read(~/Library/Keychains/**)", "Read(**/google_credentials.json)",
+      "Bash(cat *.env*)", "Bash(head *.env*)", "Bash(tail *.env*)", "Bash(less *.env*)", "Bash(more *.env*)",
+      "Bash(grep *.env*)", "Bash(rg *.env*)", "Bash(egrep *.env*)", "Bash(sed *.env*)", "Bash(awk *.env*)",
+      "Bash(cp *.env*)", "Bash(mv *.env*)", "Bash(rsync *.env*)", "Bash(scp *.env*)",
+      "Bash(strings *.env*)", "Bash(xxd *.env*)", "Bash(od *.env*)", "Bash(base64 *.env*)", "Bash(open *.env*)",
+      "Bash(source *.env*)", "Bash(. *.env*)", "Bash(*< *.env*)", "Bash(env)", "Bash(printenv*)", "Bash(set)",
+      "Bash(* ~/.ssh*)", "Bash(security find-*)", "Bash(security dump-*)",
+
+      {{#each risk.never_touch_domains}}"WebFetch(domain:{{this}})", "WebFetch(domain:*.{{this}})",{{/each}}
+
+      {{#if (eq risk.email_identity "draft-only")}}"Bash(*gmail.ts send*)", "Bash(*gmail.ts draft send*)",{{#each generated.connector_send_tools}} "{{this}}",{{/each}}{{/if}}
+
+      "Bash(*--dangerously-skip-permissions*)", "Bash(*--dangerously-bypass-approvals-and-sandbox*)"
+    ],
+    "ask": [
+      "Bash(kit grind start*)",
+      "Bash(brew install*)", "Bash(brew uninstall*)",
+      "Bash(launchctl load*)", "Bash(launchctl bootstrap*)",
+      "Bash(git push*)", "Bash(curl *)",
+      "Bash(open *)"
+    ]
+  },
+  "hooks": {
+    "_comment": "The situational-awareness injector: puts the compressed glossary head + a pointer to today's brief into context at every session start (skills/situational-awareness/INJECTOR-SPEC.md). `kit apply` MERGES this: append the entry only if no SessionStart hook with the same command exists; never remove or reorder the person's own hooks. Codex gets the equivalent entry in ~/.codex/hooks.json (hooks are trust-gated there; the person approves once) or the static include fallback.",
+    "SessionStart": [
+      { "hooks": [ { "type": "command", "command": "~/.bun/bin/bun ~/agent-starter-kit/skills/situational-awareness/tools/sa-inject.ts" } ] }
+    ]
+  },
+  "_notes": [
+    "The .env patterns are a speed bump, not a vault: a determined script could still read the file. The real controls are (1) kit tools load secrets themselves, so the agent never needs to read them, (2) the file is mode 600, and (3) the AGENTS.md rule. `kit doctor F5` checks the deny entries are present.",
+    "generated.connector_send_tools is filled at generation time (SKILL Phase 3) by listing the agent's own tool names for the claude.ai Gmail connector and selecting any whose name includes send or forward (draft-creating tools stay allowed). ⚠️ Exact connector tool names were not verifiable on 2026-10-12 because the test account's Gmail connector was unauthorized. Re-check at the first real install.",
+    "Domain denies stop WebFetch only. Claude in Chrome site access is separate: kit.config.json -> browser.no_go_domains lists the same domains, and the onboarding tells the person never to grant the extension access to them."
+  ]
+}

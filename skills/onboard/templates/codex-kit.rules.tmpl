@@ -1,0 +1,61 @@
+# ~/.codex/rules/agent-starter-kit.rules (written by `kit apply`; its own file, so nothing of the person's is overwritten)
+# Codex execpolicy rules: PREFIX matches only (`codex execpolicy check` validates them).
+# Prefix rules can't match a filename anywhere in the arguments, so the Claude-side ".env" read
+# denies have no exact Codex equivalent. On Codex that rule is enforced by AGENTS.md instruction
+# plus file mode 600, and we say so honestly in INSTALL.md §8.
+
+prefix_rule(
+    pattern = [["rm", "/bin/rm"], ["-r", "-R", "-rf", "-fr", "-Rf", "-fR", "--recursive"]],
+    decision = "forbidden",
+    justification = "No recursive deletion; move to ~/.agent-kit/_trash instead.",
+)
+
+prefix_rule(
+    pattern = [["sudo", "/usr/bin/sudo"]],
+    decision = "forbidden",
+    justification = "The agent never uses admin rights; the person runs admin steps.",
+)
+
+prefix_rule(
+    pattern = [["git", "/usr/bin/git", "/opt/homebrew/bin/git"], "push", ["--force", "-f", "--force-with-lease"]],
+    decision = "forbidden",
+    justification = "No force-push.",
+)
+
+prefix_rule(
+    pattern = [["git", "/usr/bin/git", "/opt/homebrew/bin/git"], ["reset", "clean"]],
+    decision = "prompt",
+    justification = "Possibly destructive; ask.",
+)
+
+prefix_rule(
+    pattern = [["launchctl", "/bin/launchctl"], ["unload", "remove", "bootout"]],
+    decision = "forbidden",
+    justification = "Don't remove scheduled jobs; kit tools manage them.",
+)
+
+prefix_rule(
+    pattern = [["launchctl", "/bin/launchctl"], ["load", "bootstrap"]],
+    decision = "prompt",
+    justification = "Loading jobs triggers macOS notices; do it in the approvals sitting.",
+)
+
+prefix_rule(
+    pattern = [["brew", "/opt/homebrew/bin/brew"], ["install", "uninstall"]],
+    decision = "prompt",
+    justification = "Installs are announced and approved.",
+)
+
+prefix_rule(
+    pattern = [["security"], ["find-generic-password", "find-internet-password", "dump-keychain"]],
+    decision = "forbidden",
+    justification = "Never read the keychain.",
+)
+
+prefix_rule(
+    pattern = [["printenv", "env"]],
+    decision = "forbidden",
+    justification = "Environment may contain secrets.",
+)
+# Draft-only on Codex: Codex has no Gmail send tool from the kit on day 1 (connectors are Claude Code only),
+# and prefix rules can't target `bun …/gmail.ts send`. The draft-only rule is enforced by AGENTS.md there.
